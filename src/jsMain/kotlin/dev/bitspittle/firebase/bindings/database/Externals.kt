@@ -36,7 +36,7 @@ external interface Query {
 
 // https://firebase.google.com/docs/reference/js/database.query
 abstract external class QueryConstraint {
-    val type: String // https://firebase.google.com/docs/reference/js/database.md#queryconstrainttype
+    val type: String // https://firebase.google.com/docs/reference/js/database#queryconstrainttype
 }
 
 // https://firebase.google.com/docs/reference/js/database.transactionoptions
@@ -52,37 +52,38 @@ external class TransactionResult {
     fun toJSON(): Json
 }
 
-// https://firebase.google.com/docs/reference/js/database.md#child
-internal external fun child(parent: DatabaseReference, path: String): DatabaseReference
-
-// https://firebase.google.com/docs/reference/js/database.md#getdatabase
-internal external fun get(query: Query): Promise<DataSnapshot>
-
-// https://firebase.google.com/docs/reference/js/database.md#getdatabase
+// https://firebase.google.com/docs/reference/js/database#getdatabase
 internal external fun getDatabase(app: FirebaseApp, url: String?): Database
 
-// https://firebase.google.com/docs/reference/js/database.md#increment
+
+// https://firebase.google.com/docs/reference/js/database#child
+internal external fun child(parent: DatabaseReference, path: String): DatabaseReference
+
+// https://firebase.google.com/docs/reference/js/database#getdatabase
+internal external fun get(query: Query): Promise<DataSnapshot>
+
+// https://firebase.google.com/docs/reference/js/database#increment
 internal external fun increment(delta: Number): Json
 
-// https://firebase.google.com/docs/reference/js/database.md#limittofirst
+// https://firebase.google.com/docs/reference/js/database#limittofirst
 internal external fun limitToFirst(limit: Number): QueryConstraint
 
-// https://firebase.google.com/docs/reference/js/database.md#limittofirst
+// https://firebase.google.com/docs/reference/js/database#limittofirst
 internal external fun limitToLast(limit: Number): QueryConstraint
 
-// https://firebase.google.com/docs/reference/js/database.md#orderbychild
+// https://firebase.google.com/docs/reference/js/database#orderbychild
 internal external fun orderByChild(path: String): QueryConstraint
 
-// https://firebase.google.com/docs/reference/js/database.md#push
+// https://firebase.google.com/docs/reference/js/database#push
 internal external fun push(ref: DatabaseReference): DatabaseReference
 
-// https://firebase.google.com/docs/reference/js/database.md#query
+// https://firebase.google.com/docs/reference/js/database#query
 internal external fun query(query: Query, vararg queryConstraints: dynamic): DatabaseReference
 
-// https://firebase.google.com/docs/reference/js/database.md#ref
+// https://firebase.google.com/docs/reference/js/database#ref
 internal external fun ref(db: Database, path: String?): DatabaseReference
 
-// https://firebase.google.com/docs/reference/js/database.md#remove
+// https://firebase.google.com/docs/reference/js/database#remove
 internal external fun remove(ref: DatabaseReference): Promise<Unit>
 
 // https://firebase.google.com/docs/reference/js/database#runtransaction
@@ -92,8 +93,8 @@ internal external fun runTransaction(
     options: TransactionOptions?
 ): Promise<TransactionResult>
 
-// https://firebase.google.com/docs/reference/js/database.md#set
+// https://firebase.google.com/docs/reference/js/database#set
 internal external fun set(ref: DatabaseReference, value: dynamic): Promise<Unit>
 
-// https://firebase.google.com/docs/reference/js/database.md#update
+// https://firebase.google.com/docs/reference/js/database#update
 internal external fun update(ref: DatabaseReference, values: Json): Promise<Unit>
