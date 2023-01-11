@@ -3,6 +3,10 @@ package dev.bitspittle.firebase.bindings
 import dev.bitspittle.firebase.bindings.app.FirebaseApp
 import dev.bitspittle.firebase.bindings.app.FirebaseOptions
 import dev.bitspittle.firebase.bindings.database.*
+import dev.bitspittle.firebase.bindings.auth.Auth
+import dev.bitspittle.firebase.bindings.auth.AuthProvider
+import dev.bitspittle.firebase.bindings.auth.FederatedAuthProvider
+import dev.bitspittle.firebase.bindings.auth.User
 import kotlinx.coroutines.await
 import kotlin.js.Json
 import kotlin.js.json
@@ -48,19 +52,58 @@ object Firebase {
             )
     }
 
+    object Auth {
+        // See: https://developers.google.com/identity/openid-connect/openid-connect#authenticationuriparameters
+        data class CustomParameters(
+            val accessType: AccessType? = null,
+            val hd: String? = null,
+            val includeGrantedScopes: Boolean? = null,
+            val loginHint: String? = null,
+            val prompt: Prompt? = null,
+            val state: String? = null,
+        ) {
+            enum class AccessType {
+                OFFLINE,
+                ONLINE
+            }
+            enum class Prompt {
+                NONE,
+                CONSENT,
+                SELECT_ACCOUNT,
+            }
+        }
+        fun getAuth(app: FirebaseApp) = dev.bitspittle.firebase.bindings.auth.getAuth(app)
+
+        suspend fun createUserWithEmailAndPassword(auth: dev.bitspittle.firebase.bindings.auth.Auth, email: String, password: String) =
+            dev.bitspittle.firebase.bindings.auth.createUserWithEmailAndPassword(auth, email, password).await()
+
+        fun onAuthStateChanged(auth: dev.bitspittle.firebase.bindings.auth.Auth, handleStateChanged: (User?) -> Unit) =
+            dev.bitspittle.firebase.bindings.auth.onAuthStateChanged(auth, handleStateChanged)
+
+        suspend fun signInWithEmailAndPassword(auth: dev.bitspittle.firebase.bindings.auth.Auth, email: String, password: String) =
+            dev.bitspittle.firebase.bindings.auth.signInWithEmailAndPassword(auth, email, password).await()
+
+        suspend fun signInWithPopup(auth: dev.bitspittle.firebase.bindings.auth.Auth, provider: AuthProvider) =
+            dev.bitspittle.firebase.bindings.auth.signInWithPopup(auth, provider).await()
+
+        suspend fun signOut(auth: dev.bitspittle.firebase.bindings.auth.Auth) =
+            dev.bitspittle.firebase.bindings.auth.signOut(auth).await()
+    }
+
     object Database {
         fun TransactionOptions(applyLocally: Boolean = true) = object : TransactionOptions {
             override val applyLocally = applyLocally
         }
+
+        fun getDatabase(app: FirebaseApp, url: String? = null) =
+            dev.bitspittle.firebase.bindings.database.getDatabase(app, url)
+
 
         fun child(parent: DatabaseReference, path: String) =
             dev.bitspittle.firebase.bindings.database.child(parent, path)
 
         suspend fun get(query: Query) =
             dev.bitspittle.firebase.bindings.database.get(query).await()
-
-        fun getDatabase(app: FirebaseApp, url: String? = null) =
-            dev.bitspittle.firebase.bindings.database.getDatabase(app, url)
 
         fun increment(delta: Number) = dev.bitspittle.firebase.bindings.database.increment(delta)
 
@@ -104,7 +147,40 @@ object Firebase {
     }
 }
 
+// region app
+
 fun FirebaseApp.getDatabase(url: String? = null) = Firebase.Database.getDatabase(this, url)
+fun FirebaseApp.getAuth() = Firebase.Auth.getAuth(this)
+
+// endregion
+
+// region auth
+
+suspend fun Auth.createUserWithEmailAndPassword(email: String, password: String) =
+    Firebase.Auth.createUserWithEmailAndPassword(this, email, password)
+fun Auth.onAuthStateChanged(handleStateChanged: (User?) -> Unit) =
+    Firebase.Auth.onAuthStateChanged(this, handleStateChanged)
+suspend fun Auth.signInWithEmailAndPassword(email: String, password: String) =
+    Firebase.Auth.signInWithEmailAndPassword(this, email, password)
+suspend fun Auth.signInWithPopup(provider: AuthProvider) = Firebase.Auth.signInWithPopup(this, provider)
+suspend fun Auth.signOut() = Firebase.Auth.signOut(this)
+
+fun FederatedAuthProvider.setCustomParameters(params: Firebase.Auth.CustomParameters) = run {
+    val setValues: List<Pair<String, Any?>> = listOf(
+        "accessType" to params.accessType?.name?.lowercase(),
+        "hd" to params.hd,
+        "includeGrantedScopes" to params.includeGrantedScopes,
+        "loginHint" to params.loginHint,
+        "prompt" to params.prompt?.name?.lowercase(),
+        "state" to params.state,
+    ).filter { it.second != null }
+
+    setCustomParameters(json(*setValues.toTypedArray()))
+}
+
+// endregion
+
+// region database
 
 fun Database.ref(path: String? = null) = Firebase.Database.ref(this, path)
 
@@ -117,3 +193,5 @@ suspend fun DatabaseReference.set(value: Any) = Firebase.Database.set(this, valu
 suspend fun DatabaseReference.update(values: Json) = Firebase.Database.update(this, values)
 
 fun Query.query(vararg constraints: QueryConstraint) = Firebase.Database.query(this, *constraints)
+
+// endregion
