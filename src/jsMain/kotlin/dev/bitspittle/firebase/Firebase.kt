@@ -1,4 +1,4 @@
-package dev.bitspittle.firebase.bindings
+package dev.bitspittle.firebase
 
 import dev.bitspittle.firebase.bindings.app.FirebaseApp
 import dev.bitspittle.firebase.bindings.app.FirebaseOptions
