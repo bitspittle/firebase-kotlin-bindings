@@ -1,15 +1,17 @@
 This project is a collection of bindings for working with various Firebase services in Kotlin/JS.
 
+*<span style="color:red">THIS PROJECT IS STILL VERY EXPERIMENTAL AND NOT READY FOR PUBLIC USE.</span>*
+
 The goal of these bindings are to provide a clean, Kotlin-idiomatic view of Firebase web services:
 * JavaScript methods that return `Promise`s are converted to `suspend fun`s in Kotlin
-* Extension methods are added to make types feel more object-oriented.
-* Some methods which take JSON-objects in JavaScript are changed to take typed objects in Kotlin
+* Class design is updated for an API that is more object-oriented.
+* Some methods which take in / return JSON-objects in JavaScript are changed to typed objects in Kotlin.
 * Constructor (factory) methods are added when possible to make constructing JavaScript interfaces with optional
   parameters easier.
 
 ## Gradle
 
-At the moment, this library is not publish. To use it, clone this project, and then run
+At the moment, this library is not published anywhere. To use it, clone this project, and then run
 
 ```bash
 $ ./gradlew publishToLocalMaven
@@ -49,7 +51,12 @@ to wrap a JS API with a Kotlin one. This is, at the moment, a learning project.
 
 ## Usage
 
-This library exposes all functionality through a `Firebase` object.
+This library provides a handcrafted Kotlin layer backed by external JS APIs that it delegates to.
+
+These custom classes are provided instead of the underlying JS APIs as those are designed somewhat inconsistently and
+occasionally using features that don't map cleanly to Kotlin concepts.
+
+To get started, initialize a `FirebaseApp` class, and use that to access the remaining APIs.
 
 So for example, this JavaScript code (taken from
 [the tutorials](https://firebase.google.com/docs/database/web/read-and-write#basic_write)):
@@ -71,30 +78,10 @@ function writeUserData(userId, name, email, imageUrl) {
 }
 ```
 
-translates to the following Kotlin code if transcribed directly:
+translates to the following Kotlin code:
 
 ```kotlin
-import Firebase.App.initializeApp
-import Firebase.Database.getDatabase
-import Firebase.Database.ref
-import Firebase.Database.set
-
-val app = initializeApp(FirebaseOptions(/*...*/))
-
-fun writeUserData(userId: String, name: String, email: String, imageUrl: String) {
-    val db = getDatabase(app)
-    set(ref(db, "users/$userId"), json(
-        "username" to name,
-        "email" to email,
-        "profile_picture" to imageUrl
-    ))
-}
-```
-
-However, a bunch of extension methods are provided, to make working with the code feel a bit more natural:
-
-```kotlin
-val app = initializeApp(FirebaseOptions(/*...*/))
+val app = FirebaseApp.initialize(FirebaseOptions(/*...*/))
 
 fun writeUserData(userId: String, name: String, email: String, imageUrl: String) {
     val db = app.getDatabase()
@@ -111,7 +98,7 @@ fun writeUserData(userId: String, name: String, email: String, imageUrl: String)
 - @firebase/analytics (<span style="color:red">none</span>)
 - @firebase/app (<span style="color:yellow">low</span>)
 - @firebase/app-check (<span style="color:red">none</span>) 
-- @firebase/auth (<span style="color:red">none</span>)
+- @firebase/auth (<span style="color:yellow">low</span>)
 - @firebase/database (<span style="color:yellow">low</span>)
 - @firebase/firestore (<span style="color:red">none</span>)
 - @firebase/functions (<span style="color:red">none</span>)
