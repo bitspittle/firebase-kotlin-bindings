@@ -1,6 +1,6 @@
 @file:JsModule("firebase/app")
 @file:JsNonModule
-package dev.bitspittle.firebase.bindings.app
+package dev.bitspittle.firebase.externals.app
 
 import kotlin.js.Json
 

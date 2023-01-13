@@ -1,12 +1,12 @@
 package dev.bitspittle.firebase
 
-import dev.bitspittle.firebase.bindings.app.FirebaseApp
-import dev.bitspittle.firebase.bindings.app.FirebaseOptions
-import dev.bitspittle.firebase.bindings.database.*
-import dev.bitspittle.firebase.bindings.auth.Auth
-import dev.bitspittle.firebase.bindings.auth.AuthProvider
-import dev.bitspittle.firebase.bindings.auth.FederatedAuthProvider
-import dev.bitspittle.firebase.bindings.auth.User
+import dev.bitspittle.firebase.externals.app.FirebaseApp
+import dev.bitspittle.firebase.externals.app.FirebaseOptions
+import dev.bitspittle.firebase.externals.database.*
+import dev.bitspittle.firebase.externals.auth.Auth
+import dev.bitspittle.firebase.externals.auth.AuthProvider
+import dev.bitspittle.firebase.externals.auth.FederatedAuthProvider
+import dev.bitspittle.firebase.externals.auth.User
 import kotlinx.coroutines.await
 import kotlin.js.Json
 import kotlin.js.json
@@ -37,7 +37,7 @@ object Firebase {
         }
 
         fun initializeApp(options: FirebaseOptions, name: String? = null) =
-            dev.bitspittle.firebase.bindings.app.initializeApp(
+            dev.bitspittle.firebase.externals.app.initializeApp(
                 json(
                     "apiKey" to options.apiKey,
                     "authDomain" to options.authDomain,
@@ -72,22 +72,22 @@ object Firebase {
                 SELECT_ACCOUNT,
             }
         }
-        fun getAuth(app: FirebaseApp) = dev.bitspittle.firebase.bindings.auth.getAuth(app)
+        fun getAuth(app: FirebaseApp) = dev.bitspittle.firebase.externals.auth.getAuth(app)
 
-        suspend fun createUserWithEmailAndPassword(auth: dev.bitspittle.firebase.bindings.auth.Auth, email: String, password: String) =
-            dev.bitspittle.firebase.bindings.auth.createUserWithEmailAndPassword(auth, email, password).await()
+        suspend fun createUserWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
+            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(auth, email, password).await()
 
-        fun onAuthStateChanged(auth: dev.bitspittle.firebase.bindings.auth.Auth, handleStateChanged: (User?) -> Unit) =
-            dev.bitspittle.firebase.bindings.auth.onAuthStateChanged(auth, handleStateChanged)
+        fun onAuthStateChanged(auth: dev.bitspittle.firebase.externals.auth.Auth, handleStateChanged: (User?) -> Unit) =
+            dev.bitspittle.firebase.externals.auth.onAuthStateChanged(auth, handleStateChanged)
 
-        suspend fun signInWithEmailAndPassword(auth: dev.bitspittle.firebase.bindings.auth.Auth, email: String, password: String) =
-            dev.bitspittle.firebase.bindings.auth.signInWithEmailAndPassword(auth, email, password).await()
+        suspend fun signInWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
+            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(auth, email, password).await()
 
-        suspend fun signInWithPopup(auth: dev.bitspittle.firebase.bindings.auth.Auth, provider: AuthProvider) =
-            dev.bitspittle.firebase.bindings.auth.signInWithPopup(auth, provider).await()
+        suspend fun signInWithPopup(auth: dev.bitspittle.firebase.externals.auth.Auth, provider: AuthProvider) =
+            dev.bitspittle.firebase.externals.auth.signInWithPopup(auth, provider).await()
 
-        suspend fun signOut(auth: dev.bitspittle.firebase.bindings.auth.Auth) =
-            dev.bitspittle.firebase.bindings.auth.signOut(auth).await()
+        suspend fun signOut(auth: dev.bitspittle.firebase.externals.auth.Auth) =
+            dev.bitspittle.firebase.externals.auth.signOut(auth).await()
     }
 
     object Database {
@@ -96,34 +96,34 @@ object Firebase {
         }
 
         fun getDatabase(app: FirebaseApp, url: String? = null) =
-            dev.bitspittle.firebase.bindings.database.getDatabase(app, url)
+            dev.bitspittle.firebase.externals.database.getDatabase(app, url)
 
 
         fun child(parent: DatabaseReference, path: String) =
-            dev.bitspittle.firebase.bindings.database.child(parent, path)
+            dev.bitspittle.firebase.externals.database.child(parent, path)
 
         suspend fun get(query: Query) =
-            dev.bitspittle.firebase.bindings.database.get(query).await()
+            dev.bitspittle.firebase.externals.database.get(query).await()
 
-        fun increment(delta: Number) = dev.bitspittle.firebase.bindings.database.increment(delta)
+        fun increment(delta: Number) = dev.bitspittle.firebase.externals.database.increment(delta)
 
-        fun limitToFirst(limit: Number) = dev.bitspittle.firebase.bindings.database.limitToFirst(limit)
+        fun limitToFirst(limit: Number) = dev.bitspittle.firebase.externals.database.limitToFirst(limit)
 
-        fun limitToLast(limit: Number) = dev.bitspittle.firebase.bindings.database.limitToLast(limit)
+        fun limitToLast(limit: Number) = dev.bitspittle.firebase.externals.database.limitToLast(limit)
 
-        fun orderByChild(path: String) = dev.bitspittle.firebase.bindings.database.orderByChild(path)
+        fun orderByChild(path: String) = dev.bitspittle.firebase.externals.database.orderByChild(path)
 
         fun push(ref: DatabaseReference) =
-            dev.bitspittle.firebase.bindings.database.push(ref)
+            dev.bitspittle.firebase.externals.database.push(ref)
 
         fun query(query: Query, vararg constraints: QueryConstraint) =
-            dev.bitspittle.firebase.bindings.database.query(query, *constraints)
+            dev.bitspittle.firebase.externals.database.query(query, *constraints)
 
-        fun ref(db: dev.bitspittle.firebase.bindings.database.Database, path: String? = null) =
-            dev.bitspittle.firebase.bindings.database.ref(db, path)
+        fun ref(db: dev.bitspittle.firebase.externals.database.Database, path: String? = null) =
+            dev.bitspittle.firebase.externals.database.ref(db, path)
 
         suspend fun remove(ref: DatabaseReference) {
-            dev.bitspittle.firebase.bindings.database.remove(ref).await()
+            dev.bitspittle.firebase.externals.database.remove(ref).await()
         }
 
         suspend fun runTransaction(
@@ -131,18 +131,18 @@ object Firebase {
             transactionUpdate: (currentData: Any) -> Any?,
             options: TransactionOptions? = null,
         ) =
-            dev.bitspittle.firebase.bindings.database.runTransaction(
+            dev.bitspittle.firebase.externals.database.runTransaction(
                 ref,
                 transactionUpdate = { transactionUpdate(it as Any) },
                 options
             ).await()
 
         suspend fun set(ref: DatabaseReference, value: Any?) {
-            dev.bitspittle.firebase.bindings.database.set(ref, value).await()
+            dev.bitspittle.firebase.externals.database.set(ref, value).await()
         }
 
         suspend fun update(ref: DatabaseReference, values: Json) {
-            dev.bitspittle.firebase.bindings.database.update(ref, values).await()
+            dev.bitspittle.firebase.externals.database.update(ref, values).await()
         }
     }
 }

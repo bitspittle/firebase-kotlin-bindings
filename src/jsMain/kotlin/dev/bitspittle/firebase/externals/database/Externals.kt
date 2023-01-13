@@ -1,8 +1,8 @@
 @file:JsModule("firebase/database")
 @file:JsNonModule
-package dev.bitspittle.firebase.bindings.database
+package dev.bitspittle.firebase.externals.database
 
-import dev.bitspittle.firebase.bindings.app.FirebaseApp
+import dev.bitspittle.firebase.externals.app.FirebaseApp
 import kotlin.js.Json
 import kotlin.js.Promise
 

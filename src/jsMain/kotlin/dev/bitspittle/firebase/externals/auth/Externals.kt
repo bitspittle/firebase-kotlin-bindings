@@ -1,9 +1,9 @@
 @file:JsModule("firebase/auth")
 @file:JsNonModule
-package dev.bitspittle.firebase.bindings.auth
+package dev.bitspittle.firebase.externals.auth
 
-import dev.bitspittle.firebase.bindings.app.FirebaseApp
-import dev.bitspittle.firebase.bindings.util.FirebaseError
+import dev.bitspittle.firebase.externals.app.FirebaseApp
+import dev.bitspittle.firebase.externals.util.FirebaseError
 import kotlin.js.Json
 import kotlin.js.Promise
 
