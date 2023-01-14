@@ -1,7 +1,7 @@
 package dev.bitspittle.firebase.util
 
 // e.g. "ExampleText" to "example_text"
-fun String.titleCamelCaseToSnakeCase(): String {
+internal fun String.titleCamelCaseToSnakeCase(): String {
     require(this.isNotBlank())
 
     val currentWord = StringBuilder()
@@ -22,7 +22,7 @@ fun String.titleCamelCaseToSnakeCase(): String {
 }
 
 // e.g. "example_text" to "ExampleText"
-fun String.snakeCaseToTitleCamelCase(): String {
+internal fun String.snakeCaseToTitleCamelCase(): String {
     require(this.isNotBlank())
 
     return this.split('_')
