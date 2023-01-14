@@ -35,6 +35,18 @@ class FirebaseApp private constructor(private val wrapped: dev.bitspittle.fireba
         )
     }
 
+    val name = wrapped.name
+    val options = FirebaseOptions(
+        apiKey = wrapped.options.apiKey,
+        authDomain = wrapped.options.authDomain,
+        databaseURL = wrapped.options.databaseURL,
+        projectId = wrapped.options.projectId,
+        storageBucket = wrapped.options.storageBucket,
+        messagingSenderId = wrapped.options.messagingSenderId,
+        appId = wrapped.options.appId,
+        measurementId = wrapped.options.measurementId,
+    )
+
     fun getDatabase(url: String? = null) = Database(dev.bitspittle.firebase.externals.database.getDatabase(wrapped, url))
     fun getAuth() = Auth(dev.bitspittle.firebase.externals.auth.getAuth(wrapped))
 }
