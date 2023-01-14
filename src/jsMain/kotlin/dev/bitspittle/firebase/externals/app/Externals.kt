@@ -5,13 +5,13 @@ package dev.bitspittle.firebase.externals.app
 import kotlin.js.Json
 
 // https://firebase.google.com/docs/reference/js/app.firebaseapp.md
-external interface FirebaseApp {
+internal external interface FirebaseApp {
     val name: String
     val options: FirebaseOptions
 }
 
 // https://firebase.google.com/docs/reference/js/app.firebaseoptions
-external interface FirebaseOptions {
+internal external interface FirebaseOptions {
     val apiKey: String
     val authDomain: String
     val databaseURL: String
