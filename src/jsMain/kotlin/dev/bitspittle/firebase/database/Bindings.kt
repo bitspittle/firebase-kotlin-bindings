@@ -13,7 +13,9 @@ class Database internal constructor(private val wrapped: dev.bitspittle.firebase
 open class Query internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.Query
 ) {
-    val ref = DatabaseReference(wrapped.ref)
+    // Note: Must be get() or else you end up with infinite recursion, since initializing a DatabaseReference
+    // also initialized a Query, which initialized a DatabaseReference....
+    val ref get() = DatabaseReference(wrapped.ref)
 
     suspend fun get() = DataSnapshot(
         dev.bitspittle.firebase.externals.database.get(wrapped).await()
@@ -33,8 +35,8 @@ class DatabaseReference internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.DatabaseReference
 ) : Query(wrapped) {
     val key = wrapped.key
-    val parent = wrapped.parent?.let { DatabaseReference(it) }
-    val root = DatabaseReference(wrapped.root)
+    val parent get() = wrapped.parent?.let { DatabaseReference(it) }
+    val root get() = DatabaseReference(wrapped.root)
 
     fun child(path: String) = DatabaseReference(dev.bitspittle.firebase.externals.database.child(wrapped, path))
     fun push() = DatabaseReference(dev.bitspittle.firebase.externals.database.push(wrapped))
