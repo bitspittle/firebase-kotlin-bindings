@@ -8,40 +8,42 @@ import kotlin.js.Json
 import kotlin.js.Promise
 
 // https://firebase.google.com/docs/reference/js/auth.auth
-external interface Auth {
+internal external interface Auth {
     val app: FirebaseApp
     val config: Config
     val currentUser: User?
     val languageCode: String?
     val name: String
     val settings: AuthSettings
-    val tenantId: String?
 
     fun setPersistence(persistence: Persistence): Promise<Unit>
     fun updateCurrentUser(user: User?): Promise<Unit>
     fun useDeviceLanguage()
 }
 
-external interface AuthError : FirebaseError {
+// https://firebase.google.com/docs/reference/js/auth.autherror
+internal external interface AuthError : FirebaseError {
     val customData: Json
 }
 
-external interface AuthProvider {
+// https://firebase.google.com/docs/reference/js/auth.authprovider
+internal external interface AuthProvider {
     val providerId: String
 }
 
-external interface AuthSettings {
+// https://firebase.google.com/docs/reference/js/auth.authsettings
+internal external interface AuthSettings {
     val appVerificationDisabledForTesting: Boolean
 }
 
 // https://github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/core/providers/oauth.ts
-abstract external class BaseOAuthProvider : FederatedAuthProvider {
+abstract internal external class BaseOAuthProvider : FederatedAuthProvider {
     fun addScope(scope: String): AuthProvider
     fun getScopes(): Array<String>
 }
 
 // https://firebase.google.com/docs/reference/js/auth.config
-external interface Config {
+internal external interface Config {
     val apiHost: String
     val apiKey: String
     val apiScheme: String
@@ -51,45 +53,38 @@ external interface Config {
 }
 
 // https://firebase.google.com/docs/reference/js/auth.googleauthprovider
-external class GoogleAuthProvider : BaseOAuthProvider {
+internal external class GoogleAuthProvider : BaseOAuthProvider {
     override val providerId: String
 }
 
-abstract external class FederatedAuthProvider : AuthProvider {
+// https://github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/core/providers/federated.ts
+internal abstract external class FederatedAuthProvider : AuthProvider {
     fun setCustomParameters(params: Json): AuthProvider
 }
 
-// https://firebase.google.com/docs/reference/js/auth#operationtype
-external enum class OperationType {
-    LINK,
-    REAUTHENTICATE,
-    SIGN_IN
-}
-
 // https://firebase.google.com/docs/reference/js/auth.persistence
-external interface Persistence {
+internal external interface Persistence {
     val type: dynamic // 'SESSION' | 'LOCAL' | 'NONE'
 }
 
 // https://firebase.google.com/docs/reference/js/auth.user
-external interface User : UserInfo {
+internal external interface User : UserInfo {
     val emailVerified: Boolean
     val isAnonymous: Boolean
     val metadata: UserMetadata
     val providerData: Array<UserInfo>
     val refreshToken: String
-    val tenantId: String?
 }
 
 // https://firebase.google.com/docs/reference/js/auth.usercredential
-external interface UserCredential {
-    val operationType: OperationType
+internal external interface UserCredential {
+    val operationType: dynamic // 'LINK' | 'REAUTHENTICATE' | 'SIGN_IN'
     val providerId: String?
     val user: User
 }
 
 // https://firebase.google.com/docs/reference/js/auth.userinfo
-external interface UserInfo {
+internal external interface UserInfo {
     val displayName: String?
     val email: String?
     val phoneNumber: String?
@@ -99,7 +94,7 @@ external interface UserInfo {
 }
 
 // https://firebase.google.com/docs/reference/js/auth.usermetadata
-external interface UserMetadata {
+internal external interface UserMetadata {
     val creationTime: String
     val lastSignInTime: String
 }

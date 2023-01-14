@@ -2,6 +2,7 @@
 
 package dev.bitspittle.firebase.app
 
+import dev.bitspittle.firebase.auth.Auth
 import dev.bitspittle.firebase.database.Database
 import kotlin.js.json
 
@@ -35,9 +36,5 @@ class FirebaseApp private constructor(private val _app: dev.bitspittle.firebase.
     }
 
     fun getDatabase(url: String? = null) = Database(dev.bitspittle.firebase.externals.database.getDatabase(_app, url))
+    fun getAuth() = Auth(dev.bitspittle.firebase.externals.auth.getAuth(_app))
 }
-
-//    fun getDatabase(url: String? = null) = Firebase.Database.getDatabase(this, url)
-//    fun getAuth() = Firebase.Auth.getAuth(this)
-
-

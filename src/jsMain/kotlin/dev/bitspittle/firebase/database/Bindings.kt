@@ -102,31 +102,28 @@ class QueryConstraint internal constructor(internal val wrapped: dev.bitspittle.
         fun orderByChild(path: String) = QueryConstraint(dev.bitspittle.firebase.externals.database.orderByChild(path))
     }
 
-    enum class Type {
-        EndAt,
-        EndBefore,
-        StartAt,
-        StartAfter,
-        LimitToFirst,
-        LimitToLast,
-        OrderByChild,
-        OrderByKey,
-        OrderByPriority,
-        OrderByValue,
-        EqualTo;
+    val type = QueryConstraintType.from(wrapped.type)
+}
 
-        companion object {
-            internal fun from(typeStr: String) = run {
-                val name = typeStr.capitalize()
-                Type.values().first { it.name == name }
-            }
+enum class QueryConstraintType {
+    EndAt,
+    EndBefore,
+    StartAt,
+    StartAfter,
+    LimitToFirst,
+    LimitToLast,
+    OrderByChild,
+    OrderByKey,
+    OrderByPriority,
+    OrderByValue,
+    EqualTo;
+
+    companion object {
+        internal fun from(typeStr: String) = run {
+            val name = typeStr.capitalize()
+            QueryConstraintType.values().first { it.name == name }
         }
-
-        // See: https://firebase.google.com/docs/reference/js/database#queryconstrainttype
-        internal val typeStr = name.lowercase()
     }
-
-    val type = Type.from(wrapped.type)
 }
 
 class TransactionOptions internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionOptions) {

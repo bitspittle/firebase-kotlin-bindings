@@ -14,45 +14,45 @@ import kotlin.js.json
 /**
  * A type-safe API for accessing top level methods in the various Firebase modules.
  */
-object Firebase {
-    object Auth {
-        // See: https://developers.google.com/identity/openid-connect/openid-connect#authenticationuriparameters
-        data class CustomParameters(
-            val accessType: AccessType? = null,
-            val hd: String? = null,
-            val includeGrantedScopes: Boolean? = null,
-            val loginHint: String? = null,
-            val prompt: Prompt? = null,
-            val state: String? = null,
-        ) {
-            enum class AccessType {
-                OFFLINE,
-                ONLINE
-            }
-            enum class Prompt {
-                NONE,
-                CONSENT,
-                SELECT_ACCOUNT,
-            }
-        }
-        fun getAuth(app: FirebaseApp) = dev.bitspittle.firebase.externals.auth.getAuth(app)
-
-        suspend fun createUserWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
-            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(auth, email, password).await()
-
-        fun onAuthStateChanged(auth: dev.bitspittle.firebase.externals.auth.Auth, handleStateChanged: (User?) -> Unit) =
-            dev.bitspittle.firebase.externals.auth.onAuthStateChanged(auth, handleStateChanged)
-
-        suspend fun signInWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
-            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(auth, email, password).await()
-
-        suspend fun signInWithPopup(auth: dev.bitspittle.firebase.externals.auth.Auth, provider: AuthProvider) =
-            dev.bitspittle.firebase.externals.auth.signInWithPopup(auth, provider).await()
-
-        suspend fun signOut(auth: dev.bitspittle.firebase.externals.auth.Auth) =
-            dev.bitspittle.firebase.externals.auth.signOut(auth).await()
-    }
-}
+//object Firebase {
+//    object Auth {
+//        // See: https://developers.google.com/identity/openid-connect/openid-connect#authenticationuriparameters
+//        data class CustomParameters(
+//            val accessType: AccessType? = null,
+//            val hd: String? = null,
+//            val includeGrantedScopes: Boolean? = null,
+//            val loginHint: String? = null,
+//            val prompt: Prompt? = null,
+//            val state: String? = null,
+//        ) {
+//            enum class AccessType {
+//                OFFLINE,
+//                ONLINE
+//            }
+//            enum class Prompt {
+//                NONE,
+//                CONSENT,
+//                SELECT_ACCOUNT,
+//            }
+//        }
+//        fun getAuth(app: FirebaseApp) = dev.bitspittle.firebase.externals.auth.getAuth(app)
+//
+//        suspend fun createUserWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
+//            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(auth, email, password).await()
+//
+//        fun onAuthStateChanged(auth: dev.bitspittle.firebase.externals.auth.Auth, handleStateChanged: (User?) -> Unit) =
+//            dev.bitspittle.firebase.externals.auth.onAuthStateChanged(auth, handleStateChanged)
+//
+//        suspend fun signInWithEmailAndPassword(auth: dev.bitspittle.firebase.externals.auth.Auth, email: String, password: String) =
+//            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(auth, email, password).await()
+//
+//        suspend fun signInWithPopup(auth: dev.bitspittle.firebase.externals.auth.Auth, provider: AuthProvider) =
+//            dev.bitspittle.firebase.externals.auth.signInWithPopup(auth, provider).await()
+//
+//        suspend fun signOut(auth: dev.bitspittle.firebase.externals.auth.Auth) =
+//            dev.bitspittle.firebase.externals.auth.signOut(auth).await()
+//    }
+//}
 
 // region app
 
