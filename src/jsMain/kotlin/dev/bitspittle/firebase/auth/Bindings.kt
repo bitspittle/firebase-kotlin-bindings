@@ -2,6 +2,7 @@
 
 package dev.bitspittle.firebase.auth
 
+import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
 import kotlinx.coroutines.await
 
 class Auth internal constructor(private val _auth: dev.bitspittle.firebase.externals.auth.Auth) {
@@ -18,26 +19,32 @@ class Auth internal constructor(private val _auth: dev.bitspittle.firebase.exter
         _auth.updateCurrentUser(user?.wrapped).await()
 
     fun useDeviceLanguage() = _auth.useDeviceLanguage()
+
+    fun onAuthStateChanged(handleStateChanged: (User?) -> Unit) {
+        dev.bitspittle.firebase.externals.auth.onAuthStateChanged(_auth) { _user ->
+            handleStateChanged(_user?.let { User(it) })
+        }
+    }
+
+    suspend fun createUserWithEmailAndPassword(email: String, password: String) = UserCredential(
+        dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(_auth, email, password).await()
+    )
+
+    suspend fun signInWithEmailAndPassword(email: String, password: String) = UserCredential(
+        dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(_auth, email, password).await()
+    )
+
+    suspend fun signInWithPopup(provider: AuthProvider) = UserCredential(
+        dev.bitspittle.firebase.externals.auth.signInWithPopup(_auth, provider.wrapped).await()
+    )
+
+    suspend fun signOut() = dev.bitspittle.firebase.externals.auth.signOut(_auth).await()
 }
-//
-// interface AuthError : FirebaseError {
-//    val customData: Json
-//}
-//
-// interface AuthProvider {
-//    val providerId: String
-//}
-//
+
 class AuthSettings internal constructor(_settings: dev.bitspittle.firebase.externals.auth.AuthSettings) {
     val appVerificationDisabledForTesting = _settings.appVerificationDisabledForTesting
 }
-//
-//// https://github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/core/providers/oauth.ts
-//abstract  class BaseOAuthProvider : FederatedAuthProvider {
-//    fun addScope(scope: String): AuthProvider
-//    fun getScopes(): Array<String>
-//}
-//
+
 // https://firebase.google.com/docs/reference/js/auth.config
  class Config internal constructor(_config: dev.bitspittle.firebase.externals.auth.Config) {
     val apiHost = _config.apiHost
@@ -47,16 +54,7 @@ class AuthSettings internal constructor(_settings: dev.bitspittle.firebase.exter
     val sdkClientVersion = _config.sdkClientVersion
     val tokenApiHost = _config.tokenApiHost
 }
-//
-//// https://firebase.google.com/docs/reference/js/auth.googleauthprovider
-// class GoogleAuthProvider : BaseOAuthProvider {
-//    override val providerId: String
-//}
-//
-//abstract  class FederatedAuthProvider : AuthProvider {
-//    fun setCustomParameters(params: Json): AuthProvider
-//}
-//
+
 enum class OperationType {
     Link,
     Reauthenticate,
@@ -64,11 +62,7 @@ enum class OperationType {
 
     companion object {
         internal fun from(type: dynamic) = run {
-            // e.g. convert SIGN_IN to SignIn
-            val name = type.toString()
-                .split('_')
-                .joinToString("") { it.capitalize() }
-
+            val name = type.toString().snakeCaseToTitleCamelCase()
             OperationType.values().first { it.name == name }
         }
     }
@@ -85,7 +79,7 @@ enum class PersistenceType {
 
     companion object {
         internal fun from(type: dynamic) = run {
-            val name = type.toString().capitalize()
+            val name = type.toString().snakeCaseToTitleCamelCase()
             PersistenceType.values().first { it.name == name }
         }
     }
@@ -120,24 +114,3 @@ class UserMetadata internal constructor(_metadata: dev.bitspittle.firebase.exter
     val creationTime = _metadata.creationTime
     val lastSignInTime = _metadata.lastSignInTime
 }
-
-
-//
-//// https://firebase.google.com/docs/reference/js/auth#getauth
-// fun getAuth(app: FirebaseApp): Auth
-//
-//
-//// https://firebase.google.com/docs/reference/js/auth#createuserwithemailandpassword
-// fun createUserWithEmailAndPassword(auth: Auth, email: String, password: String): Promise<UserCredential>
-//
-//// https://firebase.google.com/docs/reference/js/auth#onauthstatechanged
-// fun onAuthStateChanged(auth: Auth, handleStateChanged: (User?) -> Unit)
-//
-//// https://firebase.google.com/docs/reference/js/auth#signinwithemailandpassword
-// fun signInWithEmailAndPassword(auth: Auth, email: String, password: String): Promise<UserCredential>
-//
-//// https://firebase.google.com/docs/reference/js/auth#signinwithpopup
-// fun signInWithPopup(auth: Auth, provider: AuthProvider): Promise<UserCredential>
-//
-//// https://firebase.google.com/docs/reference/js/auth#signout
-// fun signOut(auth: Auth): Promise<Unit>
