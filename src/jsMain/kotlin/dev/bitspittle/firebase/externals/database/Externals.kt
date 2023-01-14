@@ -7,19 +7,19 @@ import kotlin.js.Json
 import kotlin.js.Promise
 
 // https://firebase.google.com/docs/reference/js/database.database
-external class Database {
+internal external class Database {
     val app: FirebaseApp
 }
 
 // https://firebase.google.com/docs/reference/js/database.databasereference
-external interface DatabaseReference : Query {
+internal external interface DatabaseReference : Query {
     val key: String?
     val parent: DatabaseReference?
     val root: DatabaseReference
 }
 
 // https://firebase.google.com/docs/reference/js/database.datasnapshot
-external class DataSnapshot {
+internal external class DataSnapshot {
     val key: String?
     val priority: dynamic // String | Number | null
     val ref: DatabaseReference
@@ -27,29 +27,29 @@ external class DataSnapshot {
 }
 
 // https://firebase.google.com/docs/reference/js/database.query
-external interface Query {
+internal external interface Query {
     val ref: DatabaseReference
 
     fun isEqual(other: Query): Boolean
-    fun toJSON(): Json
+    fun toJSON(): String
 }
 
-// https://firebase.google.com/docs/reference/js/database.query
-abstract external class QueryConstraint {
+// https://firebase.google.com/docs/reference/js/database.queryconstraint
+internal abstract external class QueryConstraint {
     val type: String // https://firebase.google.com/docs/reference/js/database#queryconstrainttype
 }
 
 // https://firebase.google.com/docs/reference/js/database.transactionoptions
-external interface TransactionOptions {
+internal external interface TransactionOptions {
     val applyLocally: Boolean
 }
 
 // https://firebase.google.com/docs/reference/js/database.transactionresult
-external class TransactionResult {
+internal external class TransactionResult {
     val committed: Boolean
     val snapshot: DataSnapshot
 
-    fun toJSON(): Json
+    fun toJSON(): String
 }
 
 // https://firebase.google.com/docs/reference/js/database#getdatabase
@@ -59,7 +59,7 @@ internal external fun getDatabase(app: FirebaseApp, url: String?): Database
 // https://firebase.google.com/docs/reference/js/database#child
 internal external fun child(parent: DatabaseReference, path: String): DatabaseReference
 
-// https://firebase.google.com/docs/reference/js/database#getdatabase
+// https://firebase.google.com/docs/reference/js/database#get
 internal external fun get(query: Query): Promise<DataSnapshot>
 
 // https://firebase.google.com/docs/reference/js/database#increment
@@ -68,7 +68,7 @@ internal external fun increment(delta: Number): Json
 // https://firebase.google.com/docs/reference/js/database#limittofirst
 internal external fun limitToFirst(limit: Number): QueryConstraint
 
-// https://firebase.google.com/docs/reference/js/database#limittofirst
+// https://firebase.google.com/docs/reference/js/database#limittolast
 internal external fun limitToLast(limit: Number): QueryConstraint
 
 // https://firebase.google.com/docs/reference/js/database#orderbychild
@@ -78,7 +78,7 @@ internal external fun orderByChild(path: String): QueryConstraint
 internal external fun push(ref: DatabaseReference): DatabaseReference
 
 // https://firebase.google.com/docs/reference/js/database#query
-internal external fun query(query: Query, vararg queryConstraints: dynamic): DatabaseReference
+internal external fun query(query: Query, vararg queryConstraints: dynamic): Query
 
 // https://firebase.google.com/docs/reference/js/database#ref
 internal external fun ref(db: Database, path: String?): DatabaseReference
