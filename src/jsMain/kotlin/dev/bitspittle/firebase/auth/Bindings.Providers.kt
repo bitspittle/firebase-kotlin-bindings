@@ -4,7 +4,9 @@ package dev.bitspittle.firebase.auth
 
 import kotlin.js.json
 
-abstract class AuthProvider internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.auth.AuthProvider) {
+open class AuthProvider internal constructor(
+    internal open val wrapped: dev.bitspittle.firebase.externals.auth.AuthProvider
+) {
     val providerId = wrapped.providerId
 }
 
@@ -28,9 +30,10 @@ class OAuthCustomParameters(
     }
 }
 
-abstract class FederatedAuthProvider internal constructor(
-    private val _provider: dev.bitspittle.firebase.externals.auth.FederatedAuthProvider
-) : AuthProvider(_provider) {
+open class FederatedAuthProvider internal constructor(
+    override val wrapped: dev.bitspittle.firebase.externals.auth.FederatedAuthProvider
+) : AuthProvider(wrapped) {
+
     fun setCustomParameters(params: OAuthCustomParameters): AuthProvider {
         val setValues = listOf(
             "accessType" to params.accessType?.name?.lowercase(),
@@ -41,20 +44,19 @@ abstract class FederatedAuthProvider internal constructor(
             "state" to params.state,
         ).filter { it.second != null }
 
-        return object : AuthProvider(_provider.setCustomParameters(json(*setValues.toTypedArray()))) {}
+        return AuthProvider(
+            wrapped.setCustomParameters(json(*setValues.toTypedArray()))
+        )
     }
 }
 
-abstract class BaseOAuthProvider internal constructor(
-    private val _provider: dev.bitspittle.firebase.externals.auth.BaseOAuthProvider
-): FederatedAuthProvider(_provider) {
-    fun addScope(scope: String) = object : AuthProvider(_provider.addScope(scope)) {}
-    fun getScopes() = _provider.getScopes()
+open class BaseOAuthProvider internal constructor(
+    override val wrapped: dev.bitspittle.firebase.externals.auth.BaseOAuthProvider
+) : FederatedAuthProvider(wrapped) {
+    fun addScope(scope: String): AuthProvider = AuthProvider(wrapped.addScope(scope))
+    fun getScopes() = wrapped.getScopes()
 }
 
-
-// https://firebase.google.com/docs/reference/js/auth.googleauthprovider
  class GoogleAuthProvider internal constructor(
-     private val _provider: dev.bitspittle.firebase.externals.auth.GoogleAuthProvider
- ) : BaseOAuthProvider(_provider)
-
+     override val wrapped: dev.bitspittle.firebase.externals.auth.GoogleAuthProvider
+ ) : BaseOAuthProvider(wrapped)

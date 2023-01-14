@@ -41,18 +41,22 @@ class Auth internal constructor(private val _auth: dev.bitspittle.firebase.exter
     suspend fun signOut() = dev.bitspittle.firebase.externals.auth.signOut(_auth).await()
 }
 
-class AuthSettings internal constructor(_settings: dev.bitspittle.firebase.externals.auth.AuthSettings) {
-    val appVerificationDisabledForTesting = _settings.appVerificationDisabledForTesting
+class AuthSettings internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.auth.AuthSettings
+) {
+    val appVerificationDisabledForTesting = wrapped.appVerificationDisabledForTesting
 }
 
 // https://firebase.google.com/docs/reference/js/auth.config
- class Config internal constructor(_config: dev.bitspittle.firebase.externals.auth.Config) {
-    val apiHost = _config.apiHost
-    val apiKey = _config.apiKey
-    val apiScheme = _config.apiScheme
-    val authDomain = _config.authDomain
-    val sdkClientVersion = _config.sdkClientVersion
-    val tokenApiHost = _config.tokenApiHost
+ class Config internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.auth.Config
+ ) {
+    val apiHost = wrapped.apiHost
+    val apiKey = wrapped.apiKey
+    val apiScheme = wrapped.apiScheme
+    val authDomain = wrapped.authDomain
+    val sdkClientVersion = wrapped.sdkClientVersion
+    val tokenApiHost = wrapped.tokenApiHost
 }
 
 enum class OperationType {
@@ -85,7 +89,9 @@ enum class PersistenceType {
     }
 }
 
-class User internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.auth.User) : UserInfo(wrapped) {
+class User internal constructor(
+    override val wrapped: dev.bitspittle.firebase.externals.auth.User
+) : UserInfo(wrapped) {
     val emailVerified = wrapped.emailVerified
     val isAnonymous = wrapped.isAnonymous
     val metadata = UserMetadata(wrapped.metadata)
@@ -93,24 +99,28 @@ class User internal constructor(internal val wrapped: dev.bitspittle.firebase.ex
     val refreshToken = wrapped.refreshToken
 }
 
-
-class UserCredential internal constructor(_credential: dev.bitspittle.firebase.externals.auth.UserCredential) {
-    val operationType = _credential.operationType
-    val providerId = _credential.providerId
-    val user = User(_credential.user)
+class UserCredential internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.auth.UserCredential
+) {
+    val operationType = wrapped.operationType
+    val providerId = wrapped.providerId
+    val user = User(wrapped.user)
 }
 
-
-open class UserInfo internal constructor(_info: dev.bitspittle.firebase.externals.auth.UserInfo) {
-    val displayName = _info.displayName
-    val email = _info.email
-    val phoneNumber = _info.phoneNumber
-    val photoURL = _info.photoURL
-    val providerId = _info.providerId
-    val uid = _info.uid
+open class UserInfo internal constructor(
+    internal open val wrapped: dev.bitspittle.firebase.externals.auth.UserInfo
+) {
+    val displayName = wrapped.displayName
+    val email = wrapped.email
+    val phoneNumber = wrapped.phoneNumber
+    val photoURL = wrapped.photoURL
+    val providerId = wrapped.providerId
+    val uid = wrapped.uid
 }
 
-class UserMetadata internal constructor(_metadata: dev.bitspittle.firebase.externals.auth.UserMetadata) {
-    val creationTime = _metadata.creationTime
-    val lastSignInTime = _metadata.lastSignInTime
+class UserMetadata internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.auth.UserMetadata
+) {
+    val creationTime = wrapped.creationTime
+    val lastSignInTime = wrapped.lastSignInTime
 }

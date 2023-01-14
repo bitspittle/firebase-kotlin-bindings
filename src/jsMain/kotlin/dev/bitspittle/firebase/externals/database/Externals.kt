@@ -29,9 +29,6 @@ internal external class DataSnapshot {
 // https://firebase.google.com/docs/reference/js/database.query
 internal external interface Query {
     val ref: DatabaseReference
-
-    fun isEqual(other: Query): Boolean
-    fun toJSON(): String
 }
 
 // https://firebase.google.com/docs/reference/js/database.queryconstraint
@@ -48,8 +45,6 @@ internal external interface TransactionOptions {
 internal external class TransactionResult {
     val committed: Boolean
     val snapshot: DataSnapshot
-
-    fun toJSON(): String
 }
 
 // https://firebase.google.com/docs/reference/js/database#getdatabase

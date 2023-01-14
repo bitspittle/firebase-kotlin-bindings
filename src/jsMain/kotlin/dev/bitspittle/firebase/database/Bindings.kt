@@ -5,76 +5,64 @@ package dev.bitspittle.firebase.database
 import kotlinx.coroutines.await
 import kotlin.js.json
 
-class Database internal constructor(private val _db: dev.bitspittle.firebase.externals.database.Database) {
+class Database internal constructor(private val wrapped: dev.bitspittle.firebase.externals.database.Database) {
     fun ref(path: String? = null) =
-        DatabaseReference(dev.bitspittle.firebase.externals.database.ref(_db, path))
+        DatabaseReference(dev.bitspittle.firebase.externals.database.ref(wrapped, path))
 }
 
-abstract class Query internal constructor(private val _query: dev.bitspittle.firebase.externals.database.Query) {
-    abstract val ref: DatabaseReference
-
-    override fun equals(other: Any?): Boolean {
-        return other is Query && _query.isEqual(other._query)
-    }
-
-    override fun hashCode(): Int {
-        return _query.hashCode()
-    }
+open class Query internal constructor(
+    private val wrapped: dev.bitspittle.firebase.externals.database.Query
+) {
+    val ref = DatabaseReference(wrapped.ref)
 
     suspend fun get() = DataSnapshot(
-        dev.bitspittle.firebase.externals.database.get(_query).await()
+        dev.bitspittle.firebase.externals.database.get(wrapped).await()
     )
 
-    fun query(vararg queryConstraints: QueryConstraint): Query {
-        val self = this
-        return object : Query(
+    fun query(vararg constraints: QueryConstraint): Query {
+        return Query(
             dev.bitspittle.firebase.externals.database.query(
-                _query,
-                queryConstraints.map { it.wrapped }.toTypedArray()
+                wrapped,
+                constraints.map { it.wrapped }.toTypedArray()
             )
-        ) {
-            override val ref = self.ref
-        }
+        )
     }
-
-    override fun toString() = _query.toString()
 }
 
-
 class DatabaseReference internal constructor(
-    private val _ref: dev.bitspittle.firebase.externals.database.DatabaseReference
-) : Query(_ref) {
-    override val ref: DatabaseReference = this
+    private val wrapped: dev.bitspittle.firebase.externals.database.DatabaseReference
+) : Query(wrapped) {
+    val key = wrapped.key
+    val parent = wrapped.parent?.let { DatabaseReference(it) }
+    val root = DatabaseReference(wrapped.root)
 
-    val key = _ref.key
-    val parent = _ref.parent?.let { DatabaseReference(it) }
-    val root = DatabaseReference(_ref.root)
-
-    fun child(path: String) = DatabaseReference(dev.bitspittle.firebase.externals.database.child(_ref, path))
-    fun push() = DatabaseReference(dev.bitspittle.firebase.externals.database.push(_ref))
-    suspend fun remove() = dev.bitspittle.firebase.externals.database.remove(_ref).await()
+    fun child(path: String) = DatabaseReference(dev.bitspittle.firebase.externals.database.child(wrapped, path))
+    fun push() = DatabaseReference(dev.bitspittle.firebase.externals.database.push(wrapped))
+    suspend fun remove() = dev.bitspittle.firebase.externals.database.remove(wrapped).await()
     suspend fun set(value: Any) =
-        dev.bitspittle.firebase.externals.database.set(_ref, value).await()
+        dev.bitspittle.firebase.externals.database.set(wrapped, value).await()
     suspend fun update(vararg values: Pair<String, Any>) =
-        dev.bitspittle.firebase.externals.database.update(_ref, json(*values)).await()
+        dev.bitspittle.firebase.externals.database.update(wrapped, json(*values)).await()
 
     suspend fun runTransaction(
         transactionUpdate: (currentData: Any) -> Any?,
         options: TransactionOptions? = null
     ) = TransactionResult(
         dev.bitspittle.firebase.externals.database.runTransaction(
-            _ref,
+            wrapped,
             transactionUpdate = { transactionUpdate(it as Any) },
             options?.wrapped
         ).await()
     )
 }
 
-class DataSnapshot internal constructor(_snapshot: dev.bitspittle.firebase.externals.database.DataSnapshot) {
-    val key = _snapshot.key
-    val priority = Priority.from(_snapshot.priority)
-    val ref = DatabaseReference(_snapshot.ref)
-    val size = _snapshot.size
+class DataSnapshot internal constructor(
+    private val wrapped: dev.bitspittle.firebase.externals.database.DataSnapshot
+) {
+    val key = wrapped.key
+    val priority  = Priority.from(wrapped.priority)
+    val ref = DatabaseReference(wrapped.ref)
+    val size = wrapped.size
 }
 
 sealed interface Priority {
@@ -95,7 +83,10 @@ sealed interface Priority {
     class OfString(override val value: String) : Priority
 }
 
-class QueryConstraint internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.database.QueryConstraint) {
+// Note: Can't be a class because it's used as a vararg parameter
+class QueryConstraint internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.database.QueryConstraint
+) {
     companion object {
         fun limitToFirst(limit: Number) = QueryConstraint(dev.bitspittle.firebase.externals.database.limitToFirst(limit))
         fun limitToLast(limit: Number) = QueryConstraint(dev.bitspittle.firebase.externals.database.limitToLast(limit))
@@ -126,13 +117,17 @@ enum class QueryConstraintType {
     }
 }
 
-class TransactionOptions internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionOptions) {
+class TransactionOptions internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionOptions
+) {
     val applyLocally = wrapped.applyLocally
 }
 
-class TransactionResult internal constructor(_result: dev.bitspittle.firebase.externals.database.TransactionResult) {
-    val committed = _result.committed
-    val snapshot = DataSnapshot(_result.snapshot)
+class TransactionResult internal constructor(
+    internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionResult
+) {
+    val committed = wrapped.committed
+    val snapshot = DataSnapshot(wrapped.snapshot)
 }
 
 object ServerValue {
