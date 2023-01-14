@@ -95,7 +95,7 @@ fun writeUserData(userId: String, name: String, email: String, imageUrl: String)
 
 ## API support
 
-- @firebase/analytics (<span style="color:red">none</span>)
+- @firebase/analytics (<span style="color:yellow">low</span>)
 - @firebase/app (<span style="color:yellow">low</span>)
 - @firebase/app-check (<span style="color:red">none</span>) 
 - @firebase/auth (<span style="color:yellow">low</span>)

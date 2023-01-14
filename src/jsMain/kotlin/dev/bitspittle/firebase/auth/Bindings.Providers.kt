@@ -2,7 +2,9 @@
 
 package dev.bitspittle.firebase.auth
 
-import kotlin.js.json
+import dev.bitspittle.firebase.util.filterIfValueIsNull
+import dev.bitspittle.firebase.util.jsonWithoutNullValues
+import dev.bitspittle.firebase.util.toJson
 
 open class AuthProvider internal constructor(
     internal open val wrapped: dev.bitspittle.firebase.externals.auth.AuthProvider
@@ -35,17 +37,17 @@ open class FederatedAuthProvider internal constructor(
 ) : AuthProvider(wrapped) {
 
     fun setCustomParameters(params: OAuthCustomParameters): AuthProvider {
-        val setValues = listOf(
-            "accessType" to params.accessType?.name?.lowercase(),
-            "hd" to params.hd,
-            "includeGrantedScopes" to params.includeGrantedScopes,
-            "loginHint" to params.loginHint,
-            "prompt" to params.prompt?.name?.lowercase(),
-            "state" to params.state,
-        ).filter { it.second != null }
-
         return AuthProvider(
-            wrapped.setCustomParameters(json(*setValues.toTypedArray()))
+            wrapped.setCustomParameters(
+                jsonWithoutNullValues(
+                    "accessType" to params.accessType?.name?.lowercase(),
+                    "hd" to params.hd,
+                    "includeGrantedScopes" to params.includeGrantedScopes,
+                    "loginHint" to params.loginHint,
+                    "prompt" to params.prompt?.name?.lowercase(),
+                    "state" to params.state,
+                )
+            )
         )
     }
 }

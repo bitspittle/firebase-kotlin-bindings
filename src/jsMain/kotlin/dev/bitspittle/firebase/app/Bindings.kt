@@ -2,6 +2,7 @@
 
 package dev.bitspittle.firebase.app
 
+import dev.bitspittle.firebase.analytics.Analytics
 import dev.bitspittle.firebase.auth.Auth
 import dev.bitspittle.firebase.database.Database
 import kotlin.js.json
@@ -17,7 +18,7 @@ data class FirebaseOptions(
     val measurementId: String? = null,
 )
 
-class FirebaseApp private constructor(private val wrapped: dev.bitspittle.firebase.externals.app.FirebaseApp) {
+class FirebaseApp internal constructor(private val wrapped: dev.bitspittle.firebase.externals.app.FirebaseApp) {
     companion object {
         fun initialize(options: FirebaseOptions, name: String? = null) = FirebaseApp(
             dev.bitspittle.firebase.externals.app.initializeApp(json(
@@ -47,6 +48,8 @@ class FirebaseApp private constructor(private val wrapped: dev.bitspittle.fireba
         measurementId = wrapped.options.measurementId,
     )
 
+    fun getAnalytics() = Analytics(dev.bitspittle.firebase.externals.analytics.getAnalytics(wrapped))
     fun getDatabase(url: String? = null) = Database(dev.bitspittle.firebase.externals.database.getDatabase(wrapped, url))
     fun getAuth() = Auth(dev.bitspittle.firebase.externals.auth.getAuth(wrapped))
+
 }
