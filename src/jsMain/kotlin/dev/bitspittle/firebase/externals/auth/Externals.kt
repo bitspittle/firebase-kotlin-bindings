@@ -37,7 +37,7 @@ internal external interface AuthSettings {
 }
 
 // https://github.com/firebase/firebase-js-sdk/blob/master/packages/auth/src/core/providers/oauth.ts
-abstract internal external class BaseOAuthProvider : FederatedAuthProvider {
+internal abstract external class BaseOAuthProvider : FederatedAuthProvider {
     fun addScope(scope: String): AuthProvider
     fun getScopes(): Array<String>
 }

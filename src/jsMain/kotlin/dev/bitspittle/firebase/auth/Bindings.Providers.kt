@@ -2,14 +2,12 @@
 
 package dev.bitspittle.firebase.auth
 
-import dev.bitspittle.firebase.util.filterIfValueIsNull
 import dev.bitspittle.firebase.util.jsonWithoutNullValues
-import dev.bitspittle.firebase.util.toJson
 
 open class AuthProvider internal constructor(
     internal open val wrapped: dev.bitspittle.firebase.externals.auth.AuthProvider
 ) {
-    val providerId = wrapped.providerId
+    val providerId get() = wrapped.providerId
 }
 
 // See: https://developers.google.com/identity/openid-connect/openid-connect#authenticationuriparameters
@@ -52,13 +50,16 @@ open class FederatedAuthProvider internal constructor(
     }
 }
 
-open class BaseOAuthProvider internal constructor(
+open class BaseOAuthProvider<S: Scope> internal constructor(
     override val wrapped: dev.bitspittle.firebase.externals.auth.BaseOAuthProvider
 ) : FederatedAuthProvider(wrapped) {
-    fun addScope(scope: String): AuthProvider = AuthProvider(wrapped.addScope(scope))
-    fun getScopes() = wrapped.getScopes()
+    fun addScope(scope: S): AuthProvider = AuthProvider(wrapped.addScope(scope.key))
+    @Suppress("UNCHECKED_CAST")
+    fun getScopes() = wrapped.getScopes().map { Scope.from(it) } as List<S>
 }
 
  class GoogleAuthProvider internal constructor(
      override val wrapped: dev.bitspittle.firebase.externals.auth.GoogleAuthProvider
- ) : BaseOAuthProvider(wrapped)
+ ) : BaseOAuthProvider<Scope.Google>(wrapped) {
+     constructor() : this(dev.bitspittle.firebase.externals.auth.GoogleAuthProvider())
+ }

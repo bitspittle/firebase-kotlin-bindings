@@ -2,6 +2,7 @@
 
 package dev.bitspittle.firebase.auth
 
+import dev.bitspittle.firebase.util.FirebaseError
 import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
 import kotlinx.coroutines.await
 
@@ -26,17 +27,33 @@ class Auth internal constructor(private val _auth: dev.bitspittle.firebase.exter
         }
     }
 
-    suspend fun createUserWithEmailAndPassword(email: String, password: String) = UserCredential(
-        dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(_auth, email, password).await()
-    )
+    @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+    private inline fun runUnsafe(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Throwable) {
+            (e as? dev.bitspittle.firebase.externals.auth.AuthError)?.let { throw AuthError(it) }
+            throw e
+        }
+    }
 
-    suspend fun signInWithEmailAndPassword(email: String, password: String) = UserCredential(
-        dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(_auth, email, password).await()
-    )
+    suspend fun createUserWithEmailAndPassword(email: String, password: String) = runUnsafe {
+        UserCredential(
+            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(_auth, email, password).await()
+        )
+    }
 
-    suspend fun signInWithPopup(provider: AuthProvider) = UserCredential(
-        dev.bitspittle.firebase.externals.auth.signInWithPopup(_auth, provider.wrapped).await()
-    )
+    suspend fun signInWithEmailAndPassword(email: String, password: String) = runUnsafe {
+        UserCredential(
+            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(_auth, email, password).await()
+        )
+    }
+
+    suspend fun signInWithPopup(provider: AuthProvider) = runUnsafe {
+        UserCredential(
+            dev.bitspittle.firebase.externals.auth.signInWithPopup(_auth, provider.wrapped).await()
+        )
+    }
 
     suspend fun signOut() = dev.bitspittle.firebase.externals.auth.signOut(_auth).await()
 }
@@ -45,6 +62,14 @@ class AuthSettings internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.AuthSettings
 ) {
     val appVerificationDisabledForTesting = wrapped.appVerificationDisabledForTesting
+}
+
+class AuthError internal constructor(
+    private val wrapped: dev.bitspittle.firebase.externals.auth.AuthError
+) : Exception(), FirebaseError {
+    val customData get() = wrapped.customData
+    override val code get() = wrapped.code
+    override val message get() = wrapped.message
 }
 
 // https://firebase.google.com/docs/reference/js/auth.config
