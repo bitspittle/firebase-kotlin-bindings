@@ -50,12 +50,17 @@ open class FederatedAuthProvider internal constructor(
     }
 }
 
+sealed class Scope(internal val key: String) {
+    sealed class Google(key: String): Scope("https://www.googleapis.com/auth/$key") {
+        object Email : Google("userinfo.email")
+        object Profile : Google("userinfo.profile")
+    }
+}
+
 open class BaseOAuthProvider<S: Scope> internal constructor(
     override val wrapped: dev.bitspittle.firebase.externals.auth.BaseOAuthProvider
 ) : FederatedAuthProvider(wrapped) {
     fun addScope(scope: S): AuthProvider = AuthProvider(wrapped.addScope(scope.key))
-    @Suppress("UNCHECKED_CAST")
-    fun getScopes() = wrapped.getScopes().map { Scope.from(it) } as List<S>
 }
 
  class GoogleAuthProvider internal constructor(
