@@ -1,10 +1,7 @@
-@file:Suppress("LocalVariableName") // We use _ prefixed variables to indicate external targets
-
 package dev.bitspittle.firebase.analytics
 
 import dev.bitspittle.firebase.util.jsonWithoutNullValues
 import kotlin.js.Json
-import kotlin.js.json
 
 class Analytics internal constructor(private val wrapped: dev.bitspittle.firebase.externals.analytics.Analytics) {
     sealed class Event(val name: String) {
@@ -22,9 +19,13 @@ class Analytics internal constructor(private val wrapped: dev.bitspittle.firebas
     }
 
     fun log(event: Event, options: AnalyticsCallOptions? = null) {
-        dev.bitspittle.firebase.externals.analytics.logEvent(wrapped, event.name, event.toParams(), options?.let { options ->
+        dev.bitspittle.firebase.externals.analytics.logEvent(
+            wrapped,
+            event.name,
+            event.toParams(),
+            options?.let { options ->
             object : dev.bitspittle.firebase.externals.analytics.AnalyticsCallOptions {
-                override val global = options.global
+                override val global get() = options.global
             }
         })
     }

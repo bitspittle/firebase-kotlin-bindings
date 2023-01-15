@@ -1,5 +1,3 @@
-@file:Suppress("LocalVariableName") // We use _ prefixed variables to indicate external targets
-
 package dev.bitspittle.firebase.database
 
 import kotlinx.coroutines.await
@@ -34,7 +32,7 @@ open class Query internal constructor(
 class DatabaseReference internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.DatabaseReference
 ) : Query(wrapped) {
-    val key = wrapped.key
+    val key get() = wrapped.key
     val parent get() = wrapped.parent?.let { DatabaseReference(it) }
     val root get() = DatabaseReference(wrapped.root)
 
@@ -61,10 +59,10 @@ class DatabaseReference internal constructor(
 class DataSnapshot internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.DataSnapshot
 ) {
-    val key = wrapped.key
-    val priority  = Priority.from(wrapped.priority)
-    val ref = DatabaseReference(wrapped.ref)
-    val size = wrapped.size
+    val key get() = wrapped.key
+    val priority  get() = Priority.from(wrapped.priority)
+    val ref get() = DatabaseReference(wrapped.ref)
+    val size get() = wrapped.size
 }
 
 sealed interface Priority {
@@ -95,7 +93,7 @@ class QueryConstraint internal constructor(
         fun orderByChild(path: String) = QueryConstraint(dev.bitspittle.firebase.externals.database.orderByChild(path))
     }
 
-    val type = QueryConstraintType.from(wrapped.type)
+    val type get() = QueryConstraintType.from(wrapped.type)
 }
 
 enum class QueryConstraintType {
@@ -122,14 +120,14 @@ enum class QueryConstraintType {
 class TransactionOptions internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionOptions
 ) {
-    val applyLocally = wrapped.applyLocally
+    val applyLocally get() = wrapped.applyLocally
 }
 
 class TransactionResult internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.database.TransactionResult
 ) {
-    val committed = wrapped.committed
-    val snapshot = DataSnapshot(wrapped.snapshot)
+    val committed get() = wrapped.committed
+    val snapshot get() = DataSnapshot(wrapped.snapshot)
 }
 
 object ServerValue {

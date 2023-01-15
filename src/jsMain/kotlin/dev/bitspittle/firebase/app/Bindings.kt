@@ -1,5 +1,3 @@
-@file:Suppress("LocalVariableName") // We use _ prefixed variables to indicate external targets
-
 package dev.bitspittle.firebase.app
 
 import dev.bitspittle.firebase.analytics.Analytics
@@ -36,8 +34,8 @@ class FirebaseApp internal constructor(private val wrapped: dev.bitspittle.fireb
         )
     }
 
-    val name = wrapped.name
-    val options = FirebaseOptions(
+    val name get() = wrapped.name
+    val options get() = FirebaseOptions(
         apiKey = wrapped.options.apiKey,
         authDomain = wrapped.options.authDomain,
         databaseURL = wrapped.options.databaseURL,

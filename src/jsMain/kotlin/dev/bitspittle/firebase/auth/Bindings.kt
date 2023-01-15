@@ -1,29 +1,27 @@
-@file:Suppress("LocalVariableName") // We use _ prefixed variables to indicate external targets
-
 package dev.bitspittle.firebase.auth
 
 import dev.bitspittle.firebase.util.FirebaseError
 import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
 import kotlinx.coroutines.await
 
-class Auth internal constructor(private val _auth: dev.bitspittle.firebase.externals.auth.Auth) {
-    val config = Config(_auth.config)
-    val currentUser = _auth.currentUser?.let { User(it) }
-    val languageCode = _auth.languageCode
-    val name = _auth.name
-    val settings = AuthSettings(_auth.settings)
+class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.externals.auth.Auth) {
+    val config get() = Config(wrapped.config)
+    val currentUser get() = wrapped.currentUser?.let { User(it) }
+    val languageCode get() = wrapped.languageCode
+    val name get() = wrapped.name
+    val settings get() = AuthSettings(wrapped.settings)
 
     suspend fun setPersistence(persistence: Persistence) =
-        _auth.setPersistence(persistence.wrapped).await()
+        wrapped.setPersistence(persistence.wrapped).await()
 
     suspend fun updateCurrentUser(user: User?) =
-        _auth.updateCurrentUser(user?.wrapped).await()
+        wrapped.updateCurrentUser(user?.wrapped).await()
 
-    fun useDeviceLanguage() = _auth.useDeviceLanguage()
+    fun useDeviceLanguage() = wrapped.useDeviceLanguage()
 
     fun onAuthStateChanged(handleStateChanged: (User?) -> Unit) {
-        dev.bitspittle.firebase.externals.auth.onAuthStateChanged(_auth) { _user ->
-            handleStateChanged(_user?.let { User(it) })
+        dev.bitspittle.firebase.externals.auth.onAuthStateChanged(wrapped) { user ->
+            handleStateChanged(user?.let { User(it) })
         }
     }
 
@@ -39,29 +37,29 @@ class Auth internal constructor(private val _auth: dev.bitspittle.firebase.exter
 
     suspend fun createUserWithEmailAndPassword(email: String, password: String) = runUnsafe {
         UserCredential(
-            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(_auth, email, password).await()
+            dev.bitspittle.firebase.externals.auth.createUserWithEmailAndPassword(wrapped, email, password).await()
         )
     }
 
     suspend fun signInWithEmailAndPassword(email: String, password: String) = runUnsafe {
         UserCredential(
-            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(_auth, email, password).await()
+            dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(wrapped, email, password).await()
         )
     }
 
     suspend fun signInWithPopup(provider: AuthProvider) = runUnsafe {
         UserCredential(
-            dev.bitspittle.firebase.externals.auth.signInWithPopup(_auth, provider.wrapped).await()
+            dev.bitspittle.firebase.externals.auth.signInWithPopup(wrapped, provider.wrapped).await()
         )
     }
 
-    suspend fun signOut() = dev.bitspittle.firebase.externals.auth.signOut(_auth).await()
+    suspend fun signOut() = dev.bitspittle.firebase.externals.auth.signOut(wrapped).await()
 }
 
 class AuthSettings internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.AuthSettings
 ) {
-    val appVerificationDisabledForTesting = wrapped.appVerificationDisabledForTesting
+    val appVerificationDisabledForTesting get() = wrapped.appVerificationDisabledForTesting
 }
 
 class AuthError internal constructor(
@@ -76,12 +74,12 @@ class AuthError internal constructor(
  class Config internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.Config
  ) {
-    val apiHost = wrapped.apiHost
-    val apiKey = wrapped.apiKey
-    val apiScheme = wrapped.apiScheme
-    val authDomain = wrapped.authDomain
-    val sdkClientVersion = wrapped.sdkClientVersion
-    val tokenApiHost = wrapped.tokenApiHost
+    val apiHost get() = wrapped.apiHost
+    val apiKey get() = wrapped.apiKey
+    val apiScheme get() = wrapped.apiScheme
+    val authDomain get() = wrapped.authDomain
+    val sdkClientVersion get() = wrapped.sdkClientVersion
+    val tokenApiHost get() = wrapped.tokenApiHost
 }
 
 enum class OperationType {
@@ -98,7 +96,7 @@ enum class OperationType {
 }
 
 class Persistence internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.auth.Persistence) {
-    val type = PersistenceType.from(wrapped.type)
+    val type get() = PersistenceType.from(wrapped.type)
 }
 
 enum class PersistenceType {
@@ -117,35 +115,35 @@ enum class PersistenceType {
 class User internal constructor(
     override val wrapped: dev.bitspittle.firebase.externals.auth.User
 ) : UserInfo(wrapped) {
-    val emailVerified = wrapped.emailVerified
-    val isAnonymous = wrapped.isAnonymous
-    val metadata = UserMetadata(wrapped.metadata)
-    val providerData = wrapped.providerData.map { UserInfo(it) }.toTypedArray()
-    val refreshToken = wrapped.refreshToken
+    val emailVerified get() = wrapped.emailVerified
+    val isAnonymous get() = wrapped.isAnonymous
+    val metadata get() = UserMetadata(wrapped.metadata)
+    val providerData get() = wrapped.providerData.map { UserInfo(it) }.toTypedArray()
+    val refreshToken get() = wrapped.refreshToken
 }
 
 class UserCredential internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.UserCredential
 ) {
-    val operationType = wrapped.operationType
-    val providerId = wrapped.providerId
-    val user = User(wrapped.user)
+    val operationType get() = wrapped.operationType
+    val providerId get() = wrapped.providerId
+    val user get() = User(wrapped.user)
 }
 
 open class UserInfo internal constructor(
     internal open val wrapped: dev.bitspittle.firebase.externals.auth.UserInfo
 ) {
-    val displayName = wrapped.displayName
-    val email = wrapped.email
-    val phoneNumber = wrapped.phoneNumber
-    val photoURL = wrapped.photoURL
-    val providerId = wrapped.providerId
-    val uid = wrapped.uid
+    val displayName get() = wrapped.displayName
+    val email get() = wrapped.email
+    val phoneNumber get() = wrapped.phoneNumber
+    val photoURL get() = wrapped.photoURL
+    val providerId get() = wrapped.providerId
+    val uid get() = wrapped.uid
 }
 
 class UserMetadata internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.UserMetadata
 ) {
-    val creationTime = wrapped.creationTime
-    val lastSignInTime = wrapped.lastSignInTime
+    val creationTime get() = wrapped.creationTime
+    val lastSignInTime get() = wrapped.lastSignInTime
 }

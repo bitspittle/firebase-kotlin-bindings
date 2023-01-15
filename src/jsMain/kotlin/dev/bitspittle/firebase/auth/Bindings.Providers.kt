@@ -1,5 +1,3 @@
-@file:Suppress("LocalVariableName") // We use _ prefixed variables to indicate external targets
-
 package dev.bitspittle.firebase.auth
 
 import dev.bitspittle.firebase.util.jsonWithoutNullValues
