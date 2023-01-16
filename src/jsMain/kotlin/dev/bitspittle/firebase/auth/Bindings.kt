@@ -120,6 +120,9 @@ class User internal constructor(
     val metadata get() = UserMetadata(wrapped.metadata)
     val providerData get() = wrapped.providerData.map { UserInfo(it) }.toTypedArray()
     val refreshToken get() = wrapped.refreshToken
+
+    suspend fun delete() =
+        dev.bitspittle.firebase.externals.auth.deleteUser(wrapped).await()
 }
 
 class UserCredential internal constructor(

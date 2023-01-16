@@ -106,6 +106,9 @@ internal external fun getAuth(app: FirebaseApp): Auth
 // https://firebase.google.com/docs/reference/js/auth#createuserwithemailandpassword
 internal external fun createUserWithEmailAndPassword(auth: Auth, email: String, password: String): Promise<UserCredential>
 
+// https://firebase.google.com/docs/reference/js/auth#deleteuser
+internal external fun deleteUser(user: User): Promise<Unit>
+
 // https://firebase.google.com/docs/reference/js/auth#onauthstatechanged
 internal external fun onAuthStateChanged(auth: Auth, handleStateChanged: (User?) -> Unit)
 
