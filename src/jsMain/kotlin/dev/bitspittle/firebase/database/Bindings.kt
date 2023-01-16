@@ -3,6 +3,44 @@ package dev.bitspittle.firebase.database
 import kotlinx.coroutines.await
 import kotlin.js.json
 
+// See: https://firebase.google.com/docs/database/web/structure-data#how_data_is_structured_its_a_json_tree
+private val INVALID_KEY_CHARS = setOf(
+    '.',
+    '$',
+    '#',
+    '[',
+    ']',
+    '/',
+)
+
+/**
+ * A helper method which encodes a key, ensuring a firebase database can accept it.
+ *
+ * Note that slashes get encoded! So if you are specifying a full path, e.g. `a/b/c/$key_with_slashes_maybe`, be sure
+ * to encode just the trailing part!
+ *
+ * See also the note about valid keys here:
+ *   https://firebase.google.com/docs/database/web/structure-data#how_data_is_structured_its_a_json_tree
+ */
+fun String.encodeKey(): String {
+    var encoded = this
+    INVALID_KEY_CHARS.forEach { c ->
+        encoded = encoded.replace(c.toString(), "%${c.code.toString(16).uppercase()}")
+    }
+    return encoded
+}
+
+private val HEX_STR_REGEX = Regex("""%([a-fA-F0-9]{2})""")
+
+/**
+ * A helper method which decodes a value encoded by [encodeKey].
+ */
+fun String.decodeKey(): String {
+    return this.replace(HEX_STR_REGEX) { result ->
+        Char(result.groupValues[1].toInt(16)).toString()
+    }
+}
+
 class Database internal constructor(private val wrapped: dev.bitspittle.firebase.externals.database.Database) {
     fun ref(path: String? = null) =
         DatabaseReference(dev.bitspittle.firebase.externals.database.ref(wrapped, path))
