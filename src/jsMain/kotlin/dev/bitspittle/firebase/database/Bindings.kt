@@ -63,7 +63,20 @@ class DataSnapshot internal constructor(
     val priority  get() = Priority.from(wrapped.priority)
     val ref get() = DatabaseReference(wrapped.ref)
     val size get() = wrapped.size
+
+    fun child(path: String) = DataSnapshot(wrapped.child(path))
+    fun exists() = wrapped.exists()
+    fun hasChild(path: String) = wrapped.hasChild(path)
+    fun hasChildren() = wrapped.hasChildren()
+    fun `val`() = wrapped.`val`()
 }
+
+/**
+ * A convenience method that you can call instead of [DataSnapshot.val].
+ *
+ * Since `val` is a reserved keyword in Kotlin, making its syntax a little strange.
+ */
+fun DataSnapshot.value() = `val`()
 
 sealed interface Priority {
     companion object {

@@ -24,6 +24,12 @@ internal external class DataSnapshot {
     val priority: dynamic // String | Number | null
     val ref: DatabaseReference
     val size: Number
+
+    fun child(path: String): DataSnapshot
+    fun exists(): Boolean
+    fun hasChild(path: String): Boolean
+    fun hasChildren(): Boolean
+    fun `val`(): Any?
 }
 
 // https://firebase.google.com/docs/reference/js/database.query
