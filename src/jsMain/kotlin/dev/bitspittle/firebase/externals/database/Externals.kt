@@ -97,5 +97,8 @@ internal external fun runTransaction(
 // https://firebase.google.com/docs/reference/js/database#set
 internal external fun set(ref: DatabaseReference, value: dynamic): Promise<Unit>
 
+// https://firebase.google.com/docs/reference/js/database#servertimestamp
+internal external fun serverTimestamp(): Json
+
 // https://firebase.google.com/docs/reference/js/database#update
 internal external fun update(ref: DatabaseReference, values: Json): Promise<Unit>
