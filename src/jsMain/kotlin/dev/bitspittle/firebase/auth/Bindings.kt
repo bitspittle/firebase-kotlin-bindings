@@ -26,9 +26,9 @@ class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.ext
     }
 
     @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-    private inline fun runUnsafe(block: () -> Unit) {
+    private inline fun <T> runUnsafe(block: () -> T): T {
         try {
-            block()
+            return block()
         } catch (e: Throwable) {
             (e as? dev.bitspittle.firebase.externals.auth.AuthError)?.let { throw AuthError(it) }
             throw e
