@@ -1,6 +1,7 @@
 package dev.bitspittle.firebase.database
 
 import kotlinx.coroutines.await
+import kotlin.js.Json
 import kotlin.js.json
 
 // See: https://firebase.google.com/docs/database/web/structure-data#how_data_is_structured_its_a_json_tree
@@ -79,8 +80,8 @@ class DatabaseReference internal constructor(
     suspend fun remove() = dev.bitspittle.firebase.externals.database.remove(wrapped).await()
     suspend fun set(value: Any) =
         dev.bitspittle.firebase.externals.database.set(wrapped, value).await()
-    suspend fun update(vararg values: Pair<String, Any>) =
-        dev.bitspittle.firebase.externals.database.update(wrapped, json(*values)).await()
+    suspend fun update(values: Json) =
+        dev.bitspittle.firebase.externals.database.update(wrapped, values).await()
 
     suspend fun runTransaction(
         transactionUpdate: (currentData: Any) -> Any?,
@@ -93,6 +94,9 @@ class DatabaseReference internal constructor(
         ).await()
     )
 }
+
+suspend fun DatabaseReference.update(vararg values: Pair<String, Any?>) = update(json(*values))
+suspend fun DatabaseReference.update(values: Collection<Pair<String, Any>>) = update(*values.toTypedArray())
 
 class DataSnapshot internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.DataSnapshot
