@@ -4,6 +4,8 @@ import kotlinx.coroutines.await
 import kotlin.js.Json
 import kotlin.js.json
 
+typealias Unsubscribe = () -> Unit
+
 // See: https://firebase.google.com/docs/database/web/structure-data#how_data_is_structured_its_a_json_tree
 private val INVALID_KEY_CHARS = setOf(
     '.',
@@ -47,6 +49,10 @@ class Database internal constructor(private val wrapped: dev.bitspittle.firebase
         DatabaseReference(dev.bitspittle.firebase.externals.database.ref(wrapped, path))
 }
 
+class ListenOptions internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.database.ListenOptions) {
+    val onlyOnce get() = wrapped.onlyOnce
+}
+
 open class Query internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.Query
 ) {
@@ -57,6 +63,14 @@ open class Query internal constructor(
     suspend fun get() = DataSnapshot(
         dev.bitspittle.firebase.externals.database.get(wrapped).await()
     )
+
+    fun onValue(callback: (snapshot: DataSnapshot) -> Unit, listenOptions: ListenOptions? = null): Unsubscribe {
+        return dev.bitspittle.firebase.externals.database.onValue(
+            wrapped,
+            { callback.invoke(DataSnapshot(it)) },
+            listenOptions?.wrapped
+        ) as Unsubscribe
+    }
 
     fun query(vararg constraints: QueryConstraint): Query {
         return Query(

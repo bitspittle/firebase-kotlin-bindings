@@ -32,6 +32,11 @@ internal external class DataSnapshot {
     fun `val`(): Any?
 }
 
+// https://firebase.google.com/docs/reference/js/database.listenoptions
+internal external interface ListenOptions {
+    val onlyOnce: Boolean
+}
+
 // https://firebase.google.com/docs/reference/js/database.query
 internal external interface Query {
     val ref: DatabaseReference
@@ -71,6 +76,9 @@ internal external fun limitToFirst(limit: Number): QueryConstraint
 
 // https://firebase.google.com/docs/reference/js/database#limittolast
 internal external fun limitToLast(limit: Number): QueryConstraint
+
+// https://firebase.google.com/docs/reference/js/database#onvalue
+internal external fun onValue(query: Query, callback: (DataSnapshot) -> Unit, listenOptions: ListenOptions?): dynamic
 
 // https://firebase.google.com/docs/reference/js/database#orderbychild
 internal external fun orderByChild(path: String): QueryConstraint
