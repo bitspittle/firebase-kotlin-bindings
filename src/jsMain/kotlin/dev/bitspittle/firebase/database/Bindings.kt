@@ -220,6 +220,6 @@ class TransactionResult internal constructor(
 }
 
 object ServerValue {
-    fun increment(delta: Number) = dev.bitspittle.firebase.externals.database.increment(delta)
+    fun increment(delta: Number = 1) = dev.bitspittle.firebase.externals.database.increment(delta)
     fun timestamp() = dev.bitspittle.firebase.externals.database.serverTimestamp()
 }
