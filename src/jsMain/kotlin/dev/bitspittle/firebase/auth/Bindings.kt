@@ -123,6 +123,9 @@ class User internal constructor(
 
     suspend fun delete() =
         dev.bitspittle.firebase.externals.auth.deleteUser(wrapped).await()
+
+    suspend fun sendEmailVerification() =
+        dev.bitspittle.firebase.externals.auth.sendEmailVerification(wrapped).await()
 }
 
 class UserCredential internal constructor(

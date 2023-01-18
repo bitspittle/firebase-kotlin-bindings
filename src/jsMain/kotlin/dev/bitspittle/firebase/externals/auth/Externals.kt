@@ -112,6 +112,9 @@ internal external fun deleteUser(user: User): Promise<Unit>
 // https://firebase.google.com/docs/reference/js/auth#onauthstatechanged
 internal external fun onAuthStateChanged(auth: Auth, handleStateChanged: (User?) -> Unit)
 
+// https://firebase.google.com/docs/reference/js/auth#sendemailverification
+internal external fun sendEmailVerification(user: User): Promise<Unit>
+
 // https://firebase.google.com/docs/reference/js/auth#signinwithemailandpassword
 internal external fun signInWithEmailAndPassword(auth: Auth, email: String, password: String): Promise<UserCredential>
 
