@@ -1,5 +1,7 @@
 package dev.bitspittle.firebase.database
 
+import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
+import dev.bitspittle.firebase.util.titleCamelCaseToSnakeCase
 import kotlinx.coroutines.await
 import kotlin.js.Json
 import kotlin.js.json
@@ -133,6 +135,24 @@ class DataSnapshot internal constructor(
  * Since `val` is a reserved keyword in Kotlin, making its syntax a little strange.
  */
 fun DataSnapshot.value() = `val`()
+
+// https://firebase.google.com/docs/reference/js/database.md#eventtype
+enum class EventType {
+    Value,
+    ChildAdded,
+    ChildChanged,
+    ChildMoved,
+    ChildRemoved;
+
+    companion object {
+        internal fun from(typeStr: String) = run {
+            val name = typeStr.snakeCaseToTitleCamelCase()
+            EventType.values().first { it.name == name }
+        }
+    }
+
+    fun toTypeStr() = name.titleCamelCaseToSnakeCase()
+}
 
 sealed interface Priority {
     companion object {
