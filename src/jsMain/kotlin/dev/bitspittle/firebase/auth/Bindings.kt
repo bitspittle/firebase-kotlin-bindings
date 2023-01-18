@@ -62,14 +62,6 @@ class AuthSettings internal constructor(
     val appVerificationDisabledForTesting get() = wrapped.appVerificationDisabledForTesting
 }
 
-class AuthError internal constructor(
-    private val wrapped: dev.bitspittle.firebase.externals.auth.AuthError
-) : Exception(), FirebaseError {
-    val customData get() = wrapped.customData
-    override val code get() = wrapped.code
-    override val message get() = wrapped.message
-}
-
 // https://firebase.google.com/docs/reference/js/auth.config
  class Config internal constructor(
     internal val wrapped: dev.bitspittle.firebase.externals.auth.Config
