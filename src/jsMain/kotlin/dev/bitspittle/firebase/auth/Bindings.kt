@@ -4,6 +4,16 @@ import dev.bitspittle.firebase.util.FirebaseError
 import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
 import kotlinx.coroutines.await
 
+@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
+private inline fun <T> runUnsafe(block: () -> T): T {
+    try {
+        return block()
+    } catch (e: Throwable) {
+        (e as? dev.bitspittle.firebase.externals.auth.AuthError)?.let { throw AuthError(it) }
+        throw e
+    }
+}
+
 class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.externals.auth.Auth) {
     val config get() = Config(wrapped.config)
     val currentUser get() = wrapped.currentUser?.let { User(it) }
@@ -22,16 +32,6 @@ class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.ext
     fun onAuthStateChanged(handleStateChanged: (User?) -> Unit) {
         dev.bitspittle.firebase.externals.auth.onAuthStateChanged(wrapped) { user ->
             handleStateChanged(user?.let { User(it) })
-        }
-    }
-
-    @Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-    private inline fun <T> runUnsafe(block: () -> T): T {
-        try {
-            return block()
-        } catch (e: Throwable) {
-            (e as? dev.bitspittle.firebase.externals.auth.AuthError)?.let { throw AuthError(it) }
-            throw e
         }
     }
 
