@@ -51,9 +51,7 @@ class Database internal constructor(private val wrapped: dev.bitspittle.firebase
         DatabaseReference(dev.bitspittle.firebase.externals.database.ref(wrapped, path))
 }
 
-class ListenOptions internal constructor(internal val wrapped: dev.bitspittle.firebase.externals.database.ListenOptions) {
-    val onlyOnce get() = wrapped.onlyOnce
-}
+class ListenOptions(val onlyOnce: Boolean = false)
 
 open class Query internal constructor(
     private val wrapped: dev.bitspittle.firebase.externals.database.Query
@@ -66,12 +64,35 @@ open class Query internal constructor(
         dev.bitspittle.firebase.externals.database.get(wrapped).await()
     )
 
-    fun onValue(callback: (snapshot: DataSnapshot) -> Unit, listenOptions: ListenOptions? = null): Unsubscribe {
+    fun onValue(listenOptions: ListenOptions? = null, callback: (snapshot: DataSnapshot) -> Unit): Unsubscribe {
         return dev.bitspittle.firebase.externals.database.onValue(
             wrapped,
             { callback.invoke(DataSnapshot(it)) },
-            listenOptions?.wrapped
+            listenOptions?.let { object : dev.bitspittle.firebase.externals.database.ListenOptions {
+                override val onlyOnce = it.onlyOnce
+            }}
         ) as Unsubscribe
+    }
+
+    fun onChildAdded(listenOptions: ListenOptions? = null, callback: (snapshot: DataSnapshot, previousChildName: String?) -> Unit): Unsubscribe {
+        return dev.bitspittle.firebase.externals.database.onChildAdded(
+            wrapped,
+            { _snapshot, _previousChildName -> callback.invoke(DataSnapshot(_snapshot), _previousChildName) },
+            listenOptions?.let { object : dev.bitspittle.firebase.externals.database.ListenOptions {
+                override val onlyOnce = it.onlyOnce
+            }}
+        ) as Unsubscribe
+    }
+
+    fun off(eventType: EventType? = null, listenOptions: ListenOptions? = null, callback: (snapshot: DataSnapshot, previousChildName: String?) -> Unit) {
+        dev.bitspittle.firebase.externals.database.off(
+            wrapped,
+            eventType?.toTypeStr(),
+            { _snapshot, _previousChildName -> callback.invoke(DataSnapshot(_snapshot), _previousChildName) },
+            listenOptions?.let { object : dev.bitspittle.firebase.externals.database.ListenOptions {
+                override val onlyOnce = it.onlyOnce
+            }}
+        )
     }
 
     fun query(vararg constraints: QueryConstraint): Query {
@@ -100,12 +121,12 @@ class DatabaseReference internal constructor(
         dev.bitspittle.firebase.externals.database.update(wrapped, values).await()
 
     suspend fun runTransaction(
-        transactionUpdate: (currentData: Any) -> Any?,
-        options: TransactionOptions? = null
+        options: TransactionOptions? = null,
+        transactionUpdate: (currentData: Any?) -> Any?
     ) = TransactionResult(
         dev.bitspittle.firebase.externals.database.runTransaction(
             wrapped,
-            transactionUpdate = { transactionUpdate(it as Any) },
+            transactionUpdate = { transactionUpdate(it) },
             options?.wrapped
         ).await()
     )
@@ -120,10 +141,13 @@ class DataSnapshot internal constructor(
     val key get() = wrapped.key
     val priority  get() = Priority.from(wrapped.priority)
     val ref get() = DatabaseReference(wrapped.ref)
-    val size get() = wrapped.size
+    val size get() = wrapped.size as Int
 
     fun child(path: String) = DataSnapshot(wrapped.child(path))
     fun exists() = wrapped.exists()
+    fun forEach(action: (DataSnapshot) -> Unit) { forEachAbortable { action(it); false } }
+    // return true to abort (meaning, you found your item), false otherwise
+    fun forEachAbortable(action: (DataSnapshot) -> Boolean): Boolean = wrapped.forEach { action(DataSnapshot(it)) }
     fun hasChild(path: String) = wrapped.hasChild(path)
     fun hasChildren() = wrapped.hasChildren()
     fun `val`() = wrapped.`val`()

@@ -27,6 +27,7 @@ internal external class DataSnapshot {
 
     fun child(path: String): DataSnapshot
     fun exists(): Boolean
+    fun forEach(action: (DataSnapshot) -> Boolean): Boolean
     fun hasChild(path: String): Boolean
     fun hasChildren(): Boolean
     fun `val`(): Any?
@@ -79,6 +80,12 @@ internal external fun limitToLast(limit: Number): QueryConstraint
 
 // https://firebase.google.com/docs/reference/js/database#onvalue
 internal external fun onValue(query: Query, callback: (DataSnapshot) -> Unit, listenOptions: ListenOptions?): dynamic
+
+// https://firebase.google.com/docs/reference/js/database#onchildadded
+internal external fun onChildAdded(query: Query, callback: (DataSnapshot, String?) -> Unit, listenOptions: ListenOptions?): dynamic
+
+// https://firebase.google.com/docs/reference/js/database#off
+internal external fun off(query: Query, eventType: dynamic, callback: (DataSnapshot, String?) -> Unit, listenOptions: ListenOptions?)
 
 // https://firebase.google.com/docs/reference/js/database#orderbychild
 internal external fun orderByChild(path: String): QueryConstraint
