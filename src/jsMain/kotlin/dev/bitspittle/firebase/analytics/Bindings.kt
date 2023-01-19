@@ -42,12 +42,47 @@ class Analytics internal constructor(private val wrapped: dev.bitspittle.firebas
             wrapped,
             event.name,
             event.toParams(),
+            @Suppress("NAME_SHADOWING")
             options?.let { options ->
             object : dev.bitspittle.firebase.externals.analytics.AnalyticsCallOptions {
                 override val global get() = options.global
             }
         })
     }
+
+    fun setAnalyticsCollectionEnabled(enabled: Boolean) {
+        dev.bitspittle.firebase.externals.analytics.setAnalyticsCollectionEnabled(wrapped, enabled)
+    }
 }
 
 data class AnalyticsCallOptions(val global: Boolean)
+
+// TODO: Support passing in EventParams as well.
+class AnalyticsSettings(internal val gtagParams: GtagConfigParams = GtagConfigParams())
+
+// https://firebase.google.com/docs/reference/js/analytics.gtagconfigparams
+data class GtagConfigParams(
+    val allowAdPersonalizationSignals: Boolean? = null,
+    val allowGoogleSignals: Boolean? = null,
+    val cookieDomain: String? = null,
+    val cookieExpires: Number? = null,
+    val cookieFlags: String? = null,
+    val cookiePrefix: String? = null,
+    val cookieUpdate: Boolean? = null,
+    val pageLocation: String? = null,
+    val pageTitle: String? = null,
+    val sendPageView: Boolean? = null,
+) {
+    internal fun toJson() = jsonWithoutNullValues(
+        "allow_ad_personalization_signals" to allowAdPersonalizationSignals,
+        "allow_google_signals" to allowGoogleSignals,
+        "cookie_domain" to cookieDomain,
+        "cookie_expires" to cookieExpires,
+        "cookie_flags" to cookieFlags,
+        "cookie_prefix" to cookiePrefix,
+        "cookie_update" to cookieUpdate,
+        "page_location" to pageLocation,
+        "page_title" to pageTitle,
+        "send_page_view" to sendPageView,
+    )
+}

@@ -1,6 +1,7 @@
 package dev.bitspittle.firebase.app
 
 import dev.bitspittle.firebase.analytics.Analytics
+import dev.bitspittle.firebase.analytics.AnalyticsSettings
 import dev.bitspittle.firebase.auth.Auth
 import dev.bitspittle.firebase.database.Database
 import kotlin.js.json
@@ -47,6 +48,14 @@ class FirebaseApp internal constructor(private val wrapped: dev.bitspittle.fireb
     )
 
     fun getAnalytics() = Analytics(dev.bitspittle.firebase.externals.analytics.getAnalytics(wrapped))
+    fun initializeAnalytics(settings: AnalyticsSettings) =
+        Analytics(dev.bitspittle.firebase.externals.analytics.initializeAnalytics(
+            wrapped,
+            object : dev.bitspittle.firebase.externals.analytics.AnalyticsSettings {
+                override val config = settings.gtagParams.toJson()
+            }
+        ))
+
     fun getDatabase(url: String? = null) = Database(dev.bitspittle.firebase.externals.database.getDatabase(wrapped, url))
     fun getAuth() = Auth(dev.bitspittle.firebase.externals.auth.getAuth(wrapped))
 
