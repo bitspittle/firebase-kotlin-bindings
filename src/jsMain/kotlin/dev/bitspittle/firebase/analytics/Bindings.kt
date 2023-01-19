@@ -16,6 +16,25 @@ class Analytics internal constructor(private val wrapped: dev.bitspittle.firebas
                 "path" to path,
             )
         }
+
+        // region games
+
+        // https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtag#level_start
+        class LevelStart(private val levelName: String? = null) : Event("level_start") {
+            override fun toParams() = jsonWithoutNullValues(
+                "level_name" to levelName,
+            )
+        }
+
+        // https://developers.google.com/analytics/devguides/collection/ga4/reference/events?client_type=gtag#level_start
+        class LevelEnd(private val levelName: String? = null, private val success: Boolean? = null) : Event("level_end") {
+            override fun toParams() = jsonWithoutNullValues(
+                "level_name" to levelName,
+                "success" to success,
+            )
+        }
+
+        // endregion
     }
 
     fun log(event: Event, options: AnalyticsCallOptions? = null) {
