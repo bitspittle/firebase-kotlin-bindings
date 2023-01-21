@@ -24,6 +24,8 @@ private val INVALID_KEY_CHARS = setOf(
  * Note that slashes get encoded! So if you are specifying a full path, e.g. `a/b/c/$key_with_slashes_maybe`, be sure
  * to encode just the trailing part!
  *
+ * Later, you can use [decodeKey] to return a key to its original value.
+ *
  * See also the note about valid keys here:
  *   https://firebase.google.com/docs/database/web/structure-data#how_data_is_structured_its_a_json_tree
  */
