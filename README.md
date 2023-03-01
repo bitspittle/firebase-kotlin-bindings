@@ -14,7 +14,7 @@ The goal of these bindings are to provide a clean, Kotlin-idiomatic view of Fire
 At the moment, this library is not published anywhere. To use it, clone this project, and then run
 
 ```bash
-$ ./gradlew publishToLocalMaven
+$ ./gradlew publishToMavenLocal
 ```
 
 Then, in your own project:
