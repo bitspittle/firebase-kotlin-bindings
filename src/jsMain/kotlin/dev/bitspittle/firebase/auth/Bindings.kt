@@ -118,6 +118,12 @@ class User internal constructor(
 
     suspend fun sendEmailVerification() =
         dev.bitspittle.firebase.externals.auth.sendEmailVerification(wrapped).await()
+
+    /**
+     * Returns a JSON Web Token (JWT) used to identify the user to a Firebase service.
+     * Returns the current token if it has not expired. Otherwise, this will refresh the token and return a new one.
+     */
+    suspend fun getIdToken(forceRefresh: Boolean? = null) = wrapped.getIdToken(forceRefresh).await()
 }
 
 class UserCredential internal constructor(
