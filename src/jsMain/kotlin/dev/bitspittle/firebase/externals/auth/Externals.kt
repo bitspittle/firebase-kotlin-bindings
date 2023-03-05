@@ -74,6 +74,9 @@ internal external interface User : UserInfo {
     val metadata: UserMetadata
     val providerData: Array<UserInfo>
     val refreshToken: String
+
+    // https://firebase.google.com/docs/reference/js/auth.user#usergetidtoken
+    fun getIdToken(forceRefresh: Boolean?): Promise<String>
 }
 
 // https://firebase.google.com/docs/reference/js/auth.usercredential
