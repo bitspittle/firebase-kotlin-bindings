@@ -7,6 +7,15 @@ import dev.bitspittle.firebase.externals.util.FirebaseError
 import kotlin.js.Json
 import kotlin.js.Promise
 
+// https://firebase.google.com/docs/reference/js/auth.actioncodesettings.md#actioncodesettings_interface
+internal external interface ActionCodeSettings {
+    val android: dynamic // { installApp?: boolean; minimumVersion?: string; packageName: string; }
+    val dynamicLinkDomain: String?
+    val handleCodeInApp: Boolean
+    val iOS: dynamic // { bundleId: string; }
+    val url: String
+}
+
 // https://firebase.google.com/docs/reference/js/auth.auth
 internal external interface Auth {
     val app: FirebaseApp
@@ -112,14 +121,23 @@ internal external fun createUserWithEmailAndPassword(auth: Auth, email: String, 
 // https://firebase.google.com/docs/reference/js/auth#deleteuser
 internal external fun deleteUser(user: User): Promise<Unit>
 
+// https://firebase.google.com/docs/reference/js/auth#issigninwithemaillink
+internal external fun isSignInWithEmailLink(auth: Auth, emailLink: String): Boolean
+
 // https://firebase.google.com/docs/reference/js/auth#onauthstatechanged
 internal external fun onAuthStateChanged(auth: Auth, handleStateChanged: (User?) -> Unit)
 
 // https://firebase.google.com/docs/reference/js/auth#sendemailverification
 internal external fun sendEmailVerification(user: User): Promise<Unit>
 
+// https://firebase.google.com/docs/reference/js/auth#sendsigninlinktoemail
+internal external fun sendSignInLinkToEmail(auth: Auth, email: String, actionCodeSettings: ActionCodeSettings): Promise<Unit>
+
 // https://firebase.google.com/docs/reference/js/auth#signinwithemailandpassword
 internal external fun signInWithEmailAndPassword(auth: Auth, email: String, password: String): Promise<UserCredential>
+
+// https://firebase.google.com/docs/reference/js/auth#signinwithemaillink
+internal external fun signInWithEmailLink(auth: Auth, email: String, emailLink: String?): Promise<UserCredential>
 
 // https://firebase.google.com/docs/reference/js/auth#signinwithpopup
 internal external fun signInWithPopup(auth: Auth, provider: AuthProvider): Promise<UserCredential>

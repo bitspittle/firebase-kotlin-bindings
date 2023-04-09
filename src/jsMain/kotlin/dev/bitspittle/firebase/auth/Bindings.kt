@@ -41,9 +41,23 @@ class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.ext
         )
     }
 
+    fun isSignInLink(emailLink: String) = runUnsafe {
+        dev.bitspittle.firebase.externals.auth.isSignInWithEmailLink(wrapped, emailLink)
+    }
+
+    suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings) = runUnsafe {
+        dev.bitspittle.firebase.externals.auth.sendSignInLinkToEmail(wrapped, email, actionCodeSettings).await()
+    }
+
     suspend fun signInWithEmailAndPassword(email: String, password: String) = runUnsafe {
         UserCredential(
             dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(wrapped, email, password).await()
+        )
+    }
+
+    suspend fun signInWithEmailLink(email: String, emailLink: String?) = runUnsafe {
+        UserCredential(
+            dev.bitspittle.firebase.externals.auth.signInWithEmailLink(wrapped, email, emailLink).await()
         )
     }
 
