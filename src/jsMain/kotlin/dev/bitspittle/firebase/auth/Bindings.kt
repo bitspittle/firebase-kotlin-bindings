@@ -1,6 +1,6 @@
 package dev.bitspittle.firebase.auth
 
-import dev.bitspittle.firebase.util.FirebaseError
+import dev.bitspittle.firebase.util.jsonWithoutNullValues
 import dev.bitspittle.firebase.util.snakeCaseToTitleCamelCase
 import kotlinx.coroutines.await
 
@@ -41,9 +41,41 @@ class Auth internal constructor(private val wrapped: dev.bitspittle.firebase.ext
         )
     }
 
+    fun isSignInLink(emailLink: String) = runUnsafe {
+        dev.bitspittle.firebase.externals.auth.isSignInWithEmailLink(wrapped, emailLink)
+    }
+
+    suspend fun sendSignInLinkToEmail(email: String, actionCodeSettings: ActionCodeSettings) = runUnsafe {
+        dev.bitspittle.firebase.externals.auth.sendSignInLinkToEmail(
+            auth = wrapped,
+            email = email,
+            actionCodeSettings = object : dev.bitspittle.firebase.externals.auth.ActionCodeSettings {
+                override val android: dynamic = actionCodeSettings.android?.let { android ->
+                    jsonWithoutNullValues(
+                        "installApp" to android.installApp,
+                        "minimumVersion" to android.minimumVersion,
+                        "packageName" to android.packageName,
+                    )
+                } ?: undefined
+                override val dynamicLinkDomain: String? = actionCodeSettings.dynamicLinkDomain ?: undefined
+                override val handleCodeInApp: Boolean = actionCodeSettings.handleCodeInApp
+                override val iOS: dynamic = actionCodeSettings.iOs?.let { ios ->
+                    jsonWithoutNullValues("bundleId" to ios.bundleId)
+                } ?: undefined
+                override val url: String = actionCodeSettings.url
+            }
+        ).await()
+    }
+
     suspend fun signInWithEmailAndPassword(email: String, password: String) = runUnsafe {
         UserCredential(
             dev.bitspittle.firebase.externals.auth.signInWithEmailAndPassword(wrapped, email, password).await()
+        )
+    }
+
+    suspend fun signInWithEmailLink(email: String, emailLink: String?) = runUnsafe {
+        UserCredential(
+            dev.bitspittle.firebase.externals.auth.signInWithEmailLink(wrapped, email, emailLink).await()
         )
     }
 
