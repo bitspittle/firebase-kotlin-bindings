@@ -1,7 +1,7 @@
 [versions]
 firebase-web = "9.15.0" # from https://www.npmjs.com/package/firebase
 firebase-bindings = "0.1-SNAPSHOT"
-kotlin = "1.7.20"
+kotlin = "1.8.20"
 kotlinx-coroutines = "1.6.0"
 
 [libraries]
