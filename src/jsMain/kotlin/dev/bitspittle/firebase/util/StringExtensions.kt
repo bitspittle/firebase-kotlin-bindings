@@ -18,6 +18,7 @@ internal fun String.titleCamelCaseToSnakeCase(): String {
     }
     words.add(currentWord.toString())
 
+    @Suppress("DEPRECATION")
     return words.joinToString("_") { it.decapitalize() }
 }
 
@@ -25,6 +26,7 @@ internal fun String.titleCamelCaseToSnakeCase(): String {
 internal fun String.snakeCaseToTitleCamelCase(): String {
     require(this.isNotBlank())
 
+    @Suppress("DEPRECATION")
     return this.split('_')
         .joinToString("") { it.capitalize() }
 }

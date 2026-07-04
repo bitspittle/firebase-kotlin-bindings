@@ -13,22 +13,12 @@ group = "dev.bitspittle"
 version = libs.versions.firebase.bindings.get()
 
 kotlin {
-    js(IR) {
-        browser()
-    }
+    js { browser() }
 
-    @Suppress("UNUSED_VARIABLE") // Suppress spurious warnings about sourceset variables not being used
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-            }
-        }
-
-        val jsMain by getting {
-            dependencies {
-                implementation(npm("firebase", libs.versions.firebase.web.get()))
-                implementation(libs.kotlinx.coroutines)
-            }
+        jsMain.dependencies {
+            implementation(npm("firebase", libs.versions.firebase.web.get()))
+            implementation(libs.kotlinx.coroutines)
         }
     }
 }

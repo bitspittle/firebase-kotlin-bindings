@@ -226,8 +226,8 @@ enum class QueryConstraintType {
 
     companion object {
         internal fun from(typeStr: String) = run {
-            val name = typeStr.capitalize()
-            QueryConstraintType.values().first { it.name == name }
+            @Suppress("DEPRECATION") val name = typeStr.capitalize()
+            QueryConstraintType.entries.first { it.name == name }
         }
     }
 }
